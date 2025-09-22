@@ -1,0 +1,15 @@
+<configuration scan="true" scanPeriod="1 seconds">
+  <property scope="context" name="HOSTNAME" value="${HOSTNAME}"/>
+  <appender name="STDOUT" class="com.dream11.orchestrator.appender.CustomConsoleAppender">
+    <encoder>
+      <pattern>
+        %date %highlight(%+5level) %-26thread %logger{36} [%file:%line] [%marker] %green(%msg) %n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <root level="${ODIN_LOG_LEVEL:-info}">
+    <appender-ref ref="STDOUT" />
+  </root>
+
+</configuration>
