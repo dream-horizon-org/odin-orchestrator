@@ -25,3 +25,13 @@ repos:
     rev: v8.25.1
     hooks:
       - id: gitleaks
+
+  - repo: https://github.com/reteps/dockerfmt
+    rev: v0.3.7
+    hooks:
+      - id: dockerfmt
+
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.12.0-2
+    hooks:
+      - id: shfmt
