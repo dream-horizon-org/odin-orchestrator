@@ -6,6 +6,12 @@ on:
       - synchronize
       - opened
       - reopened
+    paths:
+      - src/**
+      - runner/**
+      - pom.xml
+      - Dockerfile
+      - entrypoint.sh
   push:
     branches:
       - master
@@ -13,7 +19,6 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    environment: ci
     steps:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
