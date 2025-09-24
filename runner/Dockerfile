@@ -1,23 +1,15 @@
-FROM groovy:4.0.6-jdk17
+FROM groovy:4.0.27-jdk21-alpine
 USER root
+ARG TARGETARCH
 
-# Install helm
-RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-RUN chmod 700 ./get_helm.sh
-RUN bash get_helm.sh
+RUN apk add bash curl jq yq docker-cli helm
 
-RUN wget https://releases.hashicorp.com/packer/1.11.1/packer_1.11.1_linux_amd64.zip
-RUN unzip packer_1.11.1_linux_amd64.zip -d /usr/local/bin/
-RUN packer plugins install github.com/hashicorp/docker 1.0.11
-RUN packer plugins install github.com/hashicorp/amazon 1.3.2
-
-# Install yq
-RUN wget https://github.com/mikefarah/yq/releases/download/v4.34.2/yq_linux_amd64 -O /usr/bin/yq
-RUN chmod +x /usr/bin/yq
-
-# Install jq
-RUN apt-get update -y
-RUN apt-get install jq -y
+# Install packer
+ARG PACKER_VERSION=1.14.2
+RUN wget https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_${TARGETARCH}.zip
+RUN unzip packer_${PACKER_VERSION}_linux_${TARGETARCH}.zip -d /usr/local/bin/
+RUN packer plugins install github.com/hashicorp/docker 1.1.2
+RUN packer plugins install github.com/hashicorp/amazon 1.5.0
 
 ADD entrypoint.sh /opt/entrypoint.sh
 WORKDIR /opt
