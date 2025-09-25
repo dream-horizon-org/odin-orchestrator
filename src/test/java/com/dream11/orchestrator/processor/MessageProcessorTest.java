@@ -2,7 +2,7 @@ package com.dream11.orchestrator.processor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.dream11.orchestrator.dto.constants.RequestMessageType;
+import com.dream11.orchestrator.constants.RequestMessageType;
 import com.dream11.orchestrator.inject.AppContext;
 import com.dream11.orchestrator.inject.ConfigModule;
 import com.dream11.orchestrator.inject.MainModule;

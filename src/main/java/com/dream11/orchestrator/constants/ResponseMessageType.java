@@ -1,4 +1,4 @@
-package com.dream11.orchestrator.dto.constants;
+package com.dream11.orchestrator.constants;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

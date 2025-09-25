@@ -27,7 +27,7 @@ public class ServiceMessageProcessor implements MessageProcessor {
         (ServiceRequestMessageBody) requestMessage.getBody();
     String deploymentNamespace =
         ManifestUtils.getNamespace(
-            serviceRequestMessageBody.getEnvName(),
+            serviceRequestMessageBody.getEnvironmentName(),
             serviceRequestMessageBody.getServiceName(),
             requestMessage.getId());
     ServiceUtils.validateComponents(serviceRequestMessageBody.getComponentActions());

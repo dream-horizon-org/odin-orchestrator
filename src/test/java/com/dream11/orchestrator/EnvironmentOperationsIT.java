@@ -3,9 +3,9 @@ package com.dream11.orchestrator;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.dream11.orchestrator.constants.NamespaceAction;
 import com.dream11.orchestrator.constants.NamespaceProviderType;
-import com.dream11.orchestrator.dto.constants.NamespaceAction;
-import com.dream11.orchestrator.dto.constants.TaskStatus;
+import com.dream11.orchestrator.constants.TaskStatus;
 import com.dream11.orchestrator.exception.OrchestratorException;
 import com.dream11.orchestrator.inject.AppContext;
 import com.dream11.orchestrator.inject.ConfigModule;

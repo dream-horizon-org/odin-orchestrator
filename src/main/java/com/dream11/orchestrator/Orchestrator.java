@@ -1,11 +1,11 @@
 package com.dream11.orchestrator;
 
 import com.dream11.orchestrator.constants.Constants;
+import com.dream11.orchestrator.constants.RequestMessageType;
+import com.dream11.orchestrator.constants.ResponseMessageType;
+import com.dream11.orchestrator.constants.TaskStatus;
 import com.dream11.orchestrator.dto.ResponseData;
 import com.dream11.orchestrator.dto.ResponseMessage;
-import com.dream11.orchestrator.dto.constants.RequestMessageType;
-import com.dream11.orchestrator.dto.constants.ResponseMessageType;
-import com.dream11.orchestrator.dto.constants.TaskStatus;
 import com.dream11.orchestrator.dto.request.RequestMessage;
 import com.dream11.orchestrator.dto.request.ServiceRequestMessageBody;
 import com.dream11.orchestrator.inject.AppContext;
@@ -103,6 +103,7 @@ public class Orchestrator {
       RequestMessage requestMessage =
           AppContext.getObjectMapper().readValue(decompressedMessage, RequestMessage.class);
       this.setTraceId(requestMessage);
+      ApplicationUtil.validate(requestMessage);
       MessageProcessor.getProcessor(requestMessage.getType()).process(requestMessage);
     }
   }

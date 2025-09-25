@@ -2,8 +2,8 @@ package com.dream11.orchestrator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.dream11.orchestrator.dto.constants.ResponseMessageType;
-import com.dream11.orchestrator.dto.constants.TaskStatus;
+import com.dream11.orchestrator.constants.ResponseMessageType;
+import com.dream11.orchestrator.constants.TaskStatus;
 import com.dream11.orchestrator.inject.AppContext;
 import com.dream11.orchestrator.inject.ConfigModule;
 import com.dream11.orchestrator.inject.MainModule;
