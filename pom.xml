@@ -406,7 +406,6 @@
           <excludes>
             <exclude>**/com/dream11/orchestrator/Main.class</exclude>
             <exclude>**/com/dream11/orchestrator/Orchestrator.class</exclude>
-            <exclude>**/com/dream11/orchestrator/provisioner/KubernetesRunnerProvisionerDto.class</exclude>
           </excludes>
         </configuration>
         <executions>

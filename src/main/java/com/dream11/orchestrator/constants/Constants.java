@@ -1,7 +1,6 @@
 package com.dream11.orchestrator.constants;
 
 import java.time.Duration;
-
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -40,5 +39,4 @@ public class Constants {
   public static final String RUNNER = "runner";
   public static final String DIND = "dind";
   public static final String ODIN = "odin";
-
 }

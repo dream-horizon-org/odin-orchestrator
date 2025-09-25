@@ -210,7 +210,7 @@ public class KubernetesRunnerProvisioner {
                                     .withMatchLabels(
                                         Map.of(
                                             "job-name",
-                                            ManifestUtils.getJobName(
+                                            ManifestUtils.getManifestName(
                                                 componentName, componentActionId)))
                                     .build())
                             .resources()

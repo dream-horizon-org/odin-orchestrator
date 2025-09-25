@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.Map;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONObject;
 
 @Data
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
@@ -60,6 +59,7 @@ public class ManifestService {
 
   private ManifestServiceDto manifestServiceDto;
   private String namespace;
+  private String manifestName;
 
   public void init(ManifestServiceDto manifestServiceDto) {
     this.manifestServiceDto = manifestServiceDto;
@@ -68,6 +68,10 @@ public class ManifestService {
             manifestServiceDto.getEnvironmentName(),
             manifestServiceDto.getServiceName(),
             manifestServiceDto.getDeploymentId());
+    this.manifestName =
+        ManifestUtils.getManifestName(
+            manifestServiceDto.getComponentAction().getName(),
+            manifestServiceDto.getComponentAction().getId());
   }
 
   private void checkInit() {
@@ -89,35 +93,7 @@ public class ManifestService {
         .build();
   }
 
-  public ConfigMap createConfigMap() {
-    checkInit();
-    String configMapName =
-        ManifestUtils.getConfigMapName(
-            this.manifestServiceDto.getComponentAction().getName(),
-            this.manifestServiceDto.getComponentAction().getId());
-
-    // Data
-    Map<String, String> data =
-        Map.of(
-            "ODIN_COMPONENT_TYPE",
-            this.manifestServiceDto.getComponentAction().getType(),
-            "ODIN_COMPONENT_VERSION",
-            this.manifestServiceDto.getComponentAction().getVersion());
-    return new ConfigMapBuilder()
-        .withMetadata(this.buildObjectMeta(configMapName))
-        .withData(data)
-        .build();
-  }
-
-  public Secret createSecret() {
-    checkInit();
-    String secretName =
-        ManifestUtils.getSecretName(
-            this.manifestServiceDto.getComponentAction().getName(),
-            this.manifestServiceDto.getComponentAction().getId());
-    SecretBuilder secretBuilder =
-        new SecretBuilder().withMetadata(this.buildObjectMeta(secretName)).withType("Opaque");
-
+  private DslMetaData buildDslMetadata() {
     DslMetaData.DslMetaDataBuilder dslMetaDataBuilder =
         DslMetaData.builder()
             .flavour(this.manifestServiceDto.getComponentAction().getDeploymentType())
@@ -158,7 +134,26 @@ public class ManifestService {
       dslMetaDataBuilder.config(
           this.manifestServiceDto.getComponentAction().getStage().getConfig());
     }
+    return dslMetaDataBuilder.build();
+  }
 
+  public ConfigMap createConfigMap() {
+    checkInit();
+    // Data
+    Map<String, String> data =
+        Map.of(
+            "ODIN_COMPONENT_TYPE",
+            this.manifestServiceDto.getComponentAction().getType(),
+            "ODIN_COMPONENT_VERSION",
+            this.manifestServiceDto.getComponentAction().getVersion());
+    return new ConfigMapBuilder()
+        .withMetadata(this.buildObjectMeta(this.manifestName))
+        .withData(data)
+        .build();
+  }
+
+  public Secret createSecret() {
+    checkInit();
     // StringData
     Map<String, String> stringData =
         new HashMap<>(
@@ -179,12 +174,12 @@ public class ManifestService {
                 Map.entry("ODIN_DSL_PASSWORD", this.appConfig.getDsl().getPassword()),
                 Map.entry(
                     "BASE_CONFIG",
-                    new JSONObject(this.manifestServiceDto.getComponentAction().getBaseConfig())
-                        .toString()),
+                    JsonUtils.toJsonString(
+                        this.manifestServiceDto.getComponentAction().getBaseConfig())),
                 Map.entry(
                     "FLAVOUR_CONFIG",
-                    new JSONObject(this.manifestServiceDto.getComponentAction().getFlavourConfig())
-                        .toString()),
+                    JsonUtils.toJsonString(
+                        this.manifestServiceDto.getComponentAction().getFlavourConfig())),
                 Map.entry(
                     "COMPONENT_METADATA",
                     JsonUtils.toJsonString(
@@ -194,7 +189,7 @@ public class ManifestService {
                             this.manifestServiceDto.getDeploymentNamespace(),
                             this.manifestServiceDto.getOrgId(),
                             this.manifestServiceDto.getDeploymentId()))),
-                Map.entry("DSL_METADATA", dslMetaDataBuilder.build().toString()),
+                Map.entry("DSL_METADATA", JsonUtils.toJsonString(this.buildDslMetadata())),
                 Map.entry(
                     "ODIN_CLOUD_PROVIDER",
                     this.manifestServiceDto
@@ -229,25 +224,23 @@ public class ManifestService {
     if (this.manifestServiceDto.getComponentAction().getOperationConfig() != null) {
       stringData.put(
           "OPERATION_CONFIG",
-          new JSONObject(this.manifestServiceDto.getComponentAction().getOperationConfig())
-              .toString());
+          JsonUtils.toJsonString(
+              this.manifestServiceDto.getComponentAction().getOperationConfig()));
     }
 
-    secretBuilder.withStringData(stringData);
-    return secretBuilder.build();
+    return new SecretBuilder()
+        .withMetadata(this.buildObjectMeta(this.manifestName))
+        .withType("Opaque")
+        .withStringData(stringData)
+        .build();
   }
 
   public ServiceAccount createServiceAccount() {
     checkInit();
-    String serviceAccountName =
-        ManifestUtils.getServiceAccountName(
-            this.manifestServiceDto.getComponentAction().getName(),
-            this.manifestServiceDto.getComponentAction().getId());
-
     return new ServiceAccountBuilder()
         .withMetadata(
             this.buildObjectMeta(
-                serviceAccountName,
+                this.manifestName,
                 AccountUtils.getRunnerServiceAccountAnnotations(
                     this.manifestServiceDto.getComponentAction().getAccounts().getAccount())))
         .build();
@@ -255,13 +248,8 @@ public class ManifestService {
 
   public Job createJob() {
     checkInit();
-    String jobName =
-        ManifestUtils.getJobName(
-            this.manifestServiceDto.getComponentAction().getName(),
-            this.manifestServiceDto.getComponentAction().getId());
-
     return new JobBuilder()
-        .withMetadata(this.buildObjectMeta(jobName))
+        .withMetadata(this.buildObjectMeta(this.manifestName))
         .withSpec(
             new JobSpecBuilder()
                 .withTemplate(this.buildPodTemplateSpec())
@@ -341,10 +329,7 @@ public class ManifestService {
     PodSpecBuilder podSpecBuilder =
         new PodSpecBuilder()
             .withImagePullSecrets(imagePullSecrets)
-            .withServiceAccountName(
-                ManifestUtils.getServiceAccountName(
-                    this.manifestServiceDto.getComponentAction().getName(),
-                    this.manifestServiceDto.getComponentAction().getId()))
+            .withServiceAccountName(this.manifestName)
             .withRestartPolicy("Never")
             .withShareProcessNamespace(true)
             .withContainers(containers)
@@ -437,21 +422,13 @@ public class ManifestService {
   private List<EnvFromSource> createEnvFromSources() {
     // Add configMap env vars
     ConfigMapEnvSourceBuilder configMapEnvSourceBuilder =
-        new ConfigMapEnvSourceBuilder()
-            .withName(
-                ManifestUtils.getConfigMapName(
-                    this.manifestServiceDto.getComponentAction().getName(),
-                    this.manifestServiceDto.getComponentAction().getId()));
+        new ConfigMapEnvSourceBuilder().withName(this.manifestName);
     EnvFromSourceBuilder envFromConfigMapSourceBuilder =
         new EnvFromSourceBuilder().withConfigMapRef(configMapEnvSourceBuilder.build());
 
     // Add secret env vars
     SecretEnvSourceBuilder secretEnvSourceBuilder =
-        new SecretEnvSourceBuilder()
-            .withName(
-                ManifestUtils.getSecretName(
-                    this.manifestServiceDto.getComponentAction().getName(),
-                    this.manifestServiceDto.getComponentAction().getId()));
+        new SecretEnvSourceBuilder().withName(this.manifestName);
     EnvFromSourceBuilder envFromSecretSourceBuilder =
         new EnvFromSourceBuilder().withSecretRef(secretEnvSourceBuilder.build());
 
