@@ -9,11 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Service {
-  Integer id;
-
   String name;
-
   String category;
-
   Map<String, Object> data;
 }
