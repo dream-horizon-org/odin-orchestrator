@@ -2,6 +2,7 @@ package com.dream11.orchestrator.dto.request;
 
 import com.dream11.orchestrator.dto.account.AccountDto;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -27,6 +28,11 @@ public class ComponentAction {
   @NotNull @Valid AccountDto accounts = new AccountDto();
 
   public boolean hasDependsOn() {
-    return this.dependsOn != null && !this.dependsOn.isEmpty();
+    return !this.dependsOn.isEmpty();
+  }
+
+  @AssertTrue(message = "Component action provider must be same as account provider")
+  boolean isValidProvider() {
+    return this.provider.equalsIgnoreCase(this.accounts.getAccount().getProvider());
   }
 }

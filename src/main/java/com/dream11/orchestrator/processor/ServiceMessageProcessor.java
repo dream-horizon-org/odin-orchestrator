@@ -4,9 +4,7 @@ import com.dream11.orchestrator.dto.request.RequestMessage;
 import com.dream11.orchestrator.dto.request.ServiceRequestMessageBody;
 import com.dream11.orchestrator.provisioner.KubernetesRunnerProvisioner;
 import com.dream11.orchestrator.service.ExecutorService;
-import com.dream11.orchestrator.util.AccountUtils;
 import com.dream11.orchestrator.util.ManifestUtils;
-import com.dream11.orchestrator.util.ServiceUtils;
 import com.google.inject.Inject;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -30,8 +28,6 @@ public class ServiceMessageProcessor implements MessageProcessor {
             serviceRequestMessageBody.getEnvironmentName(),
             serviceRequestMessageBody.getServiceName(),
             requestMessage.getId());
-    ServiceUtils.validateComponents(serviceRequestMessageBody.getComponentActions());
-    AccountUtils.validateAccount(serviceRequestMessageBody.getComponentActions());
     this.executorService.init(
         requestMessage.getId(), deploymentNamespace, serviceRequestMessageBody);
     // Check namespace
