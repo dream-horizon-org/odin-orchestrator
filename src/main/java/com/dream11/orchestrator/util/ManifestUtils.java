@@ -8,20 +8,9 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class ManifestUtils {
-  public String getSecretName(String componentName, int componentExecutionId) {
-    return String.format("%s-%d-secret", componentName, componentExecutionId);
-  }
 
-  public String getConfigMapName(String componentName, int componentExecutionId) {
-    return String.format("%s-%d-configmap", componentName, componentExecutionId);
-  }
-
-  public String getJobName(String componentName, int componentExecutionId) {
-    return String.format("%s-%d-job", componentName, componentExecutionId);
-  }
-
-  public String getServiceAccountName(String componentName, int componentExecutionId) {
-    return String.format("%s-service-%d-account", componentName, componentExecutionId);
+  public String getManifestName(String componentName, int componentExecutionId) {
+    return String.format("%s-%d", componentName, componentExecutionId);
   }
 
   public String getNamespace(String envName, String serviceName, Long deploymentId) {

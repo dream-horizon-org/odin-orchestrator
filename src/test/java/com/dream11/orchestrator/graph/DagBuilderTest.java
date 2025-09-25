@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dream11.orchestrator.dto.request.RequestMessage;
 import com.dream11.orchestrator.dto.request.ServiceRequestMessageBody;
+import com.dream11.orchestrator.inject.AppContext;
 import com.dream11.orchestrator.util.TestUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashSet;
@@ -20,7 +21,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 class DagBuilderTest {
 
   private DagBuilder dagBuilder;
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper = AppContext.getObjectMapper();
 
   @BeforeEach
   void setUp() {

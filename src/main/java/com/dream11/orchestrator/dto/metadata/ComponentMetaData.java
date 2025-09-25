@@ -1,6 +1,5 @@
 package com.dream11.orchestrator.dto.metadata;
 
-import com.dream11.orchestrator.util.JsonUtils;
 import lombok.Builder;
 import lombok.Data;
 
@@ -14,8 +13,4 @@ public class ComponentMetaData {
   String deploymentNamespace;
   long orgId;
   String operationId;
-
-  public String toString() {
-    return JsonUtils.toJsonString(this);
-  }
 }

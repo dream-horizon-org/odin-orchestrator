@@ -22,7 +22,6 @@ import com.dream11.orchestrator.util.DnsUtils;
 import com.dream11.orchestrator.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -332,8 +331,7 @@ public class DiscoveryClientService {
   }
 
   private static String checkForFailures(String responseBody) throws JsonProcessingException {
-    final ObjectMapper mapper = new ObjectMapper();
-    JsonNode root = mapper.readTree(responseBody);
+    JsonNode root = AppContext.getObjectMapper().readTree(responseBody);
     JsonNode responseList = root.path("responseList");
     StringBuilder message = new StringBuilder();
     if (responseList.isArray()) {

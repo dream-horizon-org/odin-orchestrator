@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@SuppressWarnings("squid:S2094")
 @Data
 @Builder
 @AllArgsConstructor

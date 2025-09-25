@@ -68,7 +68,6 @@ public class ExecutorService {
     }
   }
 
-  @SuppressWarnings("squid:S1135")
   public void start() {
     checkInit();
     log.info(
@@ -211,36 +210,30 @@ public class ExecutorService {
 
   void checkStateAndUpdateDag(Set<ComponentAction> componentActions) {
     for (ComponentAction componentAction : componentActions) {
-      String secretName =
-          ManifestUtils.getSecretName(componentAction.getName(), componentAction.getId());
-      String configMapName =
-          ManifestUtils.getConfigMapName(componentAction.getName(), componentAction.getId());
-      String serviceAccountName =
-          ManifestUtils.getServiceAccountName(componentAction.getName(), componentAction.getId());
-      String jobName = ManifestUtils.getJobName(componentAction.getName(), componentAction.getId());
-
+      String manifestName =
+          ManifestUtils.getManifestName(componentAction.getName(), componentAction.getId());
       // Skip componentAction if Job does not exists
-      if (!kubernetesRunnerProvisioner.jobExists(jobName, namespace)) {
+      if (!kubernetesRunnerProvisioner.jobExists(manifestName, namespace)) {
         // If a job corresponding to an action does not exist, check and clean-up resources.
         // Resources could be present if job exited a long time ago.
-        kubernetesRunnerProvisioner.deleteSecretIfExists(secretName, namespace);
-        kubernetesRunnerProvisioner.deleteConfigMapIfExists(configMapName, namespace);
-        kubernetesRunnerProvisioner.deleteServiceAccountIfExists(serviceAccountName, namespace);
+        kubernetesRunnerProvisioner.deleteSecretIfExists(manifestName, namespace);
+        kubernetesRunnerProvisioner.deleteConfigMapIfExists(manifestName, namespace);
+        kubernetesRunnerProvisioner.deleteServiceAccountIfExists(manifestName, namespace);
         continue;
       }
 
       // If a job corresponding to an action is completed, remove it from the DAG
-      if (kubernetesRunnerProvisioner.isJobSuccessful(jobName, namespace)) {
+      if (kubernetesRunnerProvisioner.isJobSuccessful(manifestName, namespace)) {
         dagBuilder.setVisibilityFalse(componentAction.getId());
         dagBuilder.updateCompletedNode(componentAction.getId(), TaskStatus.SUCCESSFUL);
-      } else if (kubernetesRunnerProvisioner.isJobFailed(jobName, namespace)) {
+      } else if (kubernetesRunnerProvisioner.isJobFailed(manifestName, namespace)) {
         // If a job corresponding to an action is failed, delete corresponding resources and leave
         // it in the DAG
-        kubernetesRunnerProvisioner.deleteSecretIfExists(secretName, namespace);
-        kubernetesRunnerProvisioner.deleteConfigMapIfExists(configMapName, namespace);
-        kubernetesRunnerProvisioner.deleteServiceAccountIfExists(serviceAccountName, namespace);
-        kubernetesRunnerProvisioner.deleteJob(jobName, namespace);
-      } else if (kubernetesRunnerProvisioner.isJobRunning(jobName, namespace)) {
+        kubernetesRunnerProvisioner.deleteSecretIfExists(manifestName, namespace);
+        kubernetesRunnerProvisioner.deleteConfigMapIfExists(manifestName, namespace);
+        kubernetesRunnerProvisioner.deleteServiceAccountIfExists(manifestName, namespace);
+        kubernetesRunnerProvisioner.deleteJob(manifestName, namespace);
+      } else if (kubernetesRunnerProvisioner.isJobRunning(manifestName, namespace)) {
         // If a job corresponding to an action is running, update its visibility to false
         dagBuilder.setVisibilityFalse(componentAction.getId());
       }

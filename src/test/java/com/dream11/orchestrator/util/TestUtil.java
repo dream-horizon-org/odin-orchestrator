@@ -109,7 +109,7 @@ public class TestUtil {
                 "provisioned-by-user" : "odin"
               },
               "runnerServiceAccountAnnotations": {
-                "annotationKey": "annotationValue"
+                "runnerAnnotationKey": "runnerAnnotationValue"
               }
             },
             "provider": "LOCAL",

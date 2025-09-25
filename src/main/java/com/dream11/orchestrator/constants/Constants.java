@@ -1,8 +1,6 @@
 package com.dream11.orchestrator.constants;
 
-import io.fabric8.kubernetes.api.model.Quantity;
 import java.time.Duration;
-import java.util.Map;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -41,15 +39,4 @@ public class Constants {
   public static final String RUNNER = "runner";
   public static final String DIND = "dind";
   public static final String ODIN = "odin";
-
-  public static final Map<String, Quantity> RUNNER_CONTAINER_RESOURCE_REQUESTS =
-      Map.of(
-          "cpu", new Quantity("1000m"),
-          "memory", new Quantity("100Mi"),
-          "ephemeral-storage", new Quantity("1Gi"));
-
-  public static final Map<String, Quantity> DIND_CONTAINER_RESOURCE_REQUESTS =
-      Map.of(
-          "cpu", new Quantity("500m"),
-          "memory", new Quantity("100Mi"));
 }

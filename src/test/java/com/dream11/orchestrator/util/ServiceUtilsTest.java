@@ -5,15 +5,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.dream11.orchestrator.dto.request.ComponentAction;
 import com.dream11.orchestrator.exception.OrchestratorException;
 import com.dream11.orchestrator.exception.OrchestratorExceptionType;
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.dream11.orchestrator.inject.AppContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import lombok.SneakyThrows;
 import org.junit.Test;
 
 public class ServiceUtilsTest {
-  final ObjectMapper objectMapper =
-      new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+  final ObjectMapper objectMapper = AppContext.getObjectMapper();
 
   @Test
   @SneakyThrows
