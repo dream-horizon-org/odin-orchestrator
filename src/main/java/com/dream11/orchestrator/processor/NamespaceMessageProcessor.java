@@ -42,6 +42,7 @@ public class NamespaceMessageProcessor implements MessageProcessor {
               namespaceRequestMessageBody.getAccount().getServices(),
               Constants.CATEGORY_KUBERNETES,
               K8sServiceData.class);
+      ApplicationUtil.validate(k8sServiceData);
       if (k8sServiceData.getClusters().isEmpty()) {
         log.info(
             String.format(

@@ -1,5 +1,8 @@
 package com.dream11.orchestrator.dto.account.servicedata;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,16 +11,16 @@ import lombok.Data;
 
 @Data
 public class OdinNamespaceProviderConfig implements NamespaceProviderConfig {
-  Map<String, String> annotations = new HashMap<>();
-  List<WorkLoad> workloads = new ArrayList<>();
+  @NotNull Map<String, String> annotations = new HashMap<>();
+  @NotNull List<@Valid WorkLoad> workloads = new ArrayList<>();
 
   @Data
   public static class WorkLoad {
-    String repo;
-    String username;
-    String password;
-    String chart;
-    String version;
-    Map<String, Object> values;
+    @NotBlank String repo;
+    @NotNull String username = "";
+    @NotNull String password = "";
+    @NotBlank String chart;
+    @NotBlank String version;
+    @NotNull Map<String, Object> values = new HashMap<>();
   }
 }

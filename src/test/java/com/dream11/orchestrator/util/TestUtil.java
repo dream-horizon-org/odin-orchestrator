@@ -77,7 +77,7 @@ public class TestUtil {
                 "clusters" : [
                   {
                     "name": "dev",
-                    "kubeconfig": "${BASE64_ENCODED_KUBECONFIG!''}",
+                    "kubeconfig": "${BASE64_ENCODED_KUBECONFIG!'ZHVtbXkK'}",
                     "namespaceConfig": {
                       "provider": {
                         "name": "${NAMESPACE_PROVIDER!'ODIN'}",
