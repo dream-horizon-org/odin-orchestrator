@@ -3,9 +3,7 @@ package com.dream11.orchestrator.constants;
 import io.fabric8.kubernetes.api.model.Quantity;
 import java.time.Duration;
 import java.util.Map;
-import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import org.apache.hc.core5.net.URIBuilder;
 
 @UtilityClass
 public class Constants {
@@ -24,7 +22,6 @@ public class Constants {
   public static final String LABEL_CREATED_AT = "createdAt";
   public static final String LABEL_TRACE_ID = "traceId";
   public static final int MESSAGE_TIMEOUT_SECONDS = 5;
-  public static final String PRODUCER_QUEUE_PATH = "queue/producer/queue-%s.conf";
   public static final String RUNNER_POD_VOLUME_NAME = "docker-sock";
   public static final String SHARED_RUNNER_POD_VOLUME_NAME = "shared";
 
@@ -55,10 +52,4 @@ public class Constants {
       Map.of(
           "cpu", new Quantity("500m"),
           "memory", new Quantity("100Mi"));
-
-  @SneakyThrows
-  public static String getDefaultKubeConfigPath() {
-    URIBuilder uriBuilder = new URIBuilder("~/.kube/config");
-    return uriBuilder.build().toString();
-  }
 }

@@ -1,6 +1,5 @@
 package com.dream11.orchestrator.util;
 
-import com.dream11.orchestrator.constants.Constants;
 import com.dream11.orchestrator.dto.metadata.CloudProviderDetails;
 import com.dream11.orchestrator.dto.metadata.ComponentMetaData;
 import com.dream11.orchestrator.dto.request.ComponentAction;
@@ -44,7 +43,6 @@ public class ManifestUtils {
                 .account(componentAction.getAccounts().getAccount())
                 .linkedAccounts(componentAction.getAccounts().getLinkedAccounts())
                 .build())
-        .kubeConfigPath(Constants.getDefaultKubeConfigPath())
         .name(componentAction.getName())
         .envName(envName)
         .deploymentNamespace(deploymentNamespace)

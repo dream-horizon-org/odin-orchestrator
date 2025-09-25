@@ -18,10 +18,6 @@ public class Account {
   Map<String, Object> accountData;
 
   String category;
-
-  @JsonProperty("default")
-  Boolean isDefault;
-
   String name;
   String provider;
   List<Service> services = new ArrayList<>();

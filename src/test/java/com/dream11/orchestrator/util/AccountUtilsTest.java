@@ -48,7 +48,7 @@ class AccountUtilsTest {
 
   private static Stream<Arguments> services() {
     Account account = new Account();
-    account.setServices(List.of(new Service(1, "TEST", "category", Map.of("old", "old"))));
+    account.setServices(List.of(new Service("TEST", "category", Map.of("old", "old"))));
     return Stream.of(
         Arguments.of(account, "category", true), Arguments.of(account, "NON_EXISTENT", false));
   }

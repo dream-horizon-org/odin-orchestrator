@@ -30,6 +30,11 @@ repos:
     rev: v0.3.7
     hooks:
       - id: dockerfmt
+        args:
+          - --write
+          - --newline
+          - --indent=4
+          - --space-redirects
 
   - repo: https://github.com/scop/pre-commit-shfmt
     rev: v3.12.0-2

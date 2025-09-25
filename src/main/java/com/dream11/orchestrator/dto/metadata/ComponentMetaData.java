@@ -10,7 +10,6 @@ public class ComponentMetaData {
 
   CloudProviderDetails cloudProviderDetails;
   String envName;
-  String kubeConfigPath;
   String name;
   String deploymentNamespace;
   long orgId;
