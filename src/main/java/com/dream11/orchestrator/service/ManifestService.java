@@ -399,7 +399,8 @@ public class ManifestService {
         .withEnvFrom(envFromSources)
         .withResources(
             new ResourceRequirementsBuilder()
-                .withRequests(Constants.RUNNER_CONTAINER_RESOURCE_REQUESTS)
+                .withRequests(this.appConfig.getRunner().getResources().getRequests())
+                .withLimits(this.appConfig.getRunner().getResources().getLimits())
                 .build())
         .withVolumeMounts(volumeMounts)
         .build();
@@ -417,7 +418,8 @@ public class ManifestService {
         .withEnvFrom(envFromSources)
         .withResources(
             new ResourceRequirementsBuilder()
-                .withRequests(Constants.DIND_CONTAINER_RESOURCE_REQUESTS)
+                .withRequests(this.appConfig.getRunner().getDind().getResources().getRequests())
+                .withLimits(this.appConfig.getRunner().getDind().getResources().getLimits())
                 .build())
         .withSecurityContext(new SecurityContextBuilder().withPrivileged(true).build())
         .withVolumeMounts(this.buildDindVolumeMounts())

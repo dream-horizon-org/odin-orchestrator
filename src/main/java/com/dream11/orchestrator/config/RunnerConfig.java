@@ -1,6 +1,7 @@
 package com.dream11.orchestrator.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.fabric8.kubernetes.api.model.Quantity;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,12 +25,14 @@ public class RunnerConfig {
   @NotNull List<@Valid DockerSecret> dockerSecrets = new ArrayList<>();
 
   @NotNull List<@Valid HostVolumeMounts> hostVolumeMounts = new ArrayList<>();
+  @Valid @NotNull Resources resources = new Resources();
 
   @Data
   public static class DindConfig {
     @NotBlank String image;
     @NotBlank String imagePullPolicy = "Always";
     @NotNull Boolean enabled = true;
+    @Valid @NotNull Resources resources = new Resources();
   }
 
   @Data
@@ -45,5 +48,11 @@ public class RunnerConfig {
     @NotBlank String name;
     @NotBlank String hostPath;
     @NotBlank String mountPath;
+  }
+
+  @Data
+  public static class Resources {
+    @NotNull Map<String, Quantity> requests = new HashMap<>();
+    @NotNull Map<String, Quantity> limits = new HashMap<>();
   }
 }
