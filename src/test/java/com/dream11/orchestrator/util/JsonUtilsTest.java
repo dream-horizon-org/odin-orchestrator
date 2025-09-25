@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.dream11.orchestrator.exception.OrchestratorException;
+import com.dream11.orchestrator.inject.AppContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test;
 
 class JsonUtilsTest {
 
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final ObjectMapper OBJECT_MAPPER = AppContext.getObjectMapper();
 
   @Test
   void testExtractMatchingLeafNodesBaseCase() throws JsonProcessingException {

@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.dream11.orchestrator.config.AppConfig;
 import com.dream11.orchestrator.dto.ManifestServiceDto;
 import com.dream11.orchestrator.dto.request.ComponentAction;
+import com.dream11.orchestrator.inject.AppContext;
 import com.dream11.orchestrator.util.ConfigUtils;
 import com.dream11.orchestrator.util.TestUtil;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.fabric8.kubernetes.api.model.batch.v1.Job;
 import java.util.List;
@@ -20,9 +20,8 @@ class ManifestServiceTest {
 
   final AppConfig appConfig = ConfigUtils.readConfig();
 
-  final ObjectMapper objectMapper =
-      new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-  ;
+  final ObjectMapper objectMapper = AppContext.getObjectMapper();
+
 
   @Test
   @SneakyThrows

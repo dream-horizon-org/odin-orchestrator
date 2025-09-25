@@ -68,7 +68,6 @@ public class ExecutorService {
     }
   }
 
-  @SuppressWarnings("squid:S1135")
   public void start() {
     checkInit();
     log.info(

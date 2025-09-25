@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @UtilityClass
 public class Main {
-  @SuppressWarnings("squid:S1172")
   public void main(String[] args) {
     log.info("Starting odin orchestrator");
     AppContext.initialize(
