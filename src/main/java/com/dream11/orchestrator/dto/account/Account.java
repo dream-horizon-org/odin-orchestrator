@@ -9,19 +9,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Account {
   @JsonProperty("data")
   @NotNull
+  @Builder.Default
   Map<String, Object> accountData = new HashMap<>();
 
   @NotBlank String category;
   @NotBlank String name;
   @NotBlank String provider;
-  @NotNull List<@Valid Service> services = new ArrayList<>();
+  @NotNull @Builder.Default List<@Valid Service> services = new ArrayList<>();
 }
