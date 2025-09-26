@@ -21,19 +21,19 @@ class ConfigUtilTest {
     // Assert
     assertThat(config).isNotNull();
     assertThat(config.getQueue().getRequest().getProvider()).isEqualTo(QueueProvider.SQS);
-    assertThat(config.getRunner().getDind().getEnabled()).isFalse();
+    assertThat(config.getRunner().getDind().getEnabled()).isTrue();
     // TODO add assertions
   }
 
   @Test
   void testReadConfigOverride() {
     // Arrange
-    System.setProperty("runner.dind.enabled", "true");
+    System.setProperty("runner.dind.enabled", "false");
 
     // Act
     AppConfig config = ConfigUtil.readConfig();
     // Assert
     assertThat(config).isNotNull();
-    assertThat(config.getRunner().getDind().getEnabled()).isTrue();
+    assertThat(config.getRunner().getDind().getEnabled()).isFalse();
   }
 }

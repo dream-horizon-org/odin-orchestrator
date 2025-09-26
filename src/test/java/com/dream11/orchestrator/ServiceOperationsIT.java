@@ -36,6 +36,7 @@ class ServiceOperationsIT {
 
   @BeforeAll
   static void setup() {
+    System.setProperty("runner.dind.enabled", "false");
     SQS_CLIENT =
         SqsAsyncClient.builder()
             .endpointOverride(URI.create(System.getProperty(Constants.SQS_REQUEST_QUEUE_ENDPOINT)))
@@ -64,6 +65,7 @@ class ServiceOperationsIT {
 
   @AfterAll
   static void tearDown() {
+    System.clearProperty("runner.dind.enabled");
     SQS_CLIENT.close();
     SQS_REQUEST_PRODUCER.close();
     SQS_RESPONSE_CONSUMER.close();
