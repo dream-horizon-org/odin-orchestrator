@@ -6,7 +6,7 @@ import com.dream11.orchestrator.constants.RequestMessageType;
 import com.dream11.orchestrator.inject.AppContext;
 import com.dream11.orchestrator.inject.ConfigModule;
 import com.dream11.orchestrator.inject.MainModule;
-import com.dream11.orchestrator.util.ConfigUtils;
+import com.dream11.orchestrator.util.ConfigUtil;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ class MessageProcessorTest {
   @BeforeAll
   static void setup() {
     AppContext.initialize(
-        List.of(new MainModule(), ConfigModule.builder().config(ConfigUtils.readConfig()).build()));
+        List.of(new MainModule(), ConfigModule.builder().config(ConfigUtil.readConfig()).build()));
   }
 
   @Test

@@ -7,7 +7,7 @@ import com.dream11.orchestrator.constants.TaskStatus;
 import com.dream11.orchestrator.inject.AppContext;
 import com.dream11.orchestrator.inject.ConfigModule;
 import com.dream11.orchestrator.inject.MainModule;
-import com.dream11.orchestrator.util.ConfigUtils;
+import com.dream11.orchestrator.util.ConfigUtil;
 import com.dream11.orchestrator.util.TestUtil;
 import com.dream11.queue.Message;
 import com.dream11.queue.impl.sqs.SqsConfig;
@@ -58,7 +58,7 @@ class ServiceOperationsIT {
     SQS_REQUEST_PRODUCER = new SqsProducer<>(sqsRequestConfig, SQS_CLIENT, __ -> __);
     SQS_RESPONSE_CONSUMER = new SqsConsumer(sqsResponseConfig, SQS_CLIENT);
     AppContext.initialize(
-        List.of(new MainModule(), ConfigModule.builder().config(ConfigUtils.readConfig()).build()));
+        List.of(new MainModule(), ConfigModule.builder().config(ConfigUtil.readConfig()).build()));
     ORCHESTRATOR = AppContext.getInstance(Orchestrator.class);
   }
 

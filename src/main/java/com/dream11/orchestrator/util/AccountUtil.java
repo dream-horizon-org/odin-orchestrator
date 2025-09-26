@@ -9,7 +9,7 @@ import java.util.Map;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class AccountUtils {
+public class AccountUtil {
 
   public <T> T getServiceWithCategory(List<Service> services, String category, Class<T> clazz) {
     Map<String, Object> data =

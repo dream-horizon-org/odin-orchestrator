@@ -17,7 +17,7 @@ class ConfigUtilTest {
   @Test
   void testReadConfigSuccess() {
     // Arrange & Act
-    AppConfig config = ConfigUtils.readConfig();
+    AppConfig config = ConfigUtil.readConfig();
     // Assert
     assertThat(config).isNotNull();
     assertThat(config.getQueue().getRequest().getProvider()).isEqualTo(QueueProvider.SQS);
@@ -31,7 +31,7 @@ class ConfigUtilTest {
     System.setProperty("runner.dind.enabled", "true");
 
     // Act
-    AppConfig config = ConfigUtils.readConfig();
+    AppConfig config = ConfigUtil.readConfig();
     // Assert
     assertThat(config).isNotNull();
     assertThat(config.getRunner().getDind().getEnabled()).isTrue();

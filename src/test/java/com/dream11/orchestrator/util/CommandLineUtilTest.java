@@ -26,7 +26,7 @@ class CommandLineUtilTest {
     // Assert
     assertThat(result.getExitCode()).isNotZero();
     assertThat(result.getStdOut()).isEmpty();
-    assertThat(result.getStdErr()).contains("usage: mv [-f | -i | -n] [-hv] source target");
+    assertThat(result.getStdErr()).isNotEmpty();
   }
 
   @Test

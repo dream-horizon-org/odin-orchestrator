@@ -7,7 +7,7 @@ import com.dream11.orchestrator.inject.AppContext;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class ManifestUtils {
+public class ManifestUtil {
 
   public String getManifestName(String componentName, int componentExecutionId) {
     return String.format("%s-%d", componentName, componentExecutionId);

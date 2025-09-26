@@ -13,13 +13,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class AccountUtilsTest {
+class AccountUtilTest {
 
   @ParameterizedTest
   @MethodSource("services")
   void testHasServiceWithCategory(Account account, String category, boolean expected) {
     // Act
-    boolean result = AccountUtils.hasServiceWithCategory(account, category);
+    boolean result = AccountUtil.hasServiceWithCategory(account, category);
     // Assert
     assertThat(result).isEqualTo(expected);
   }
@@ -28,7 +28,7 @@ class AccountUtilsTest {
   @MethodSource("resourceLabels")
   void testGetResourceLabels(Account account, Map<String, String> expectedLabels) {
     // Act
-    Map<String, String> resourceLabels = AccountUtils.getResourceLabels(account);
+    Map<String, String> resourceLabels = AccountUtil.getResourceLabels(account);
     // Assert
     assertThat(resourceLabels).containsExactlyInAnyOrderEntriesOf(expectedLabels);
   }
@@ -39,7 +39,7 @@ class AccountUtilsTest {
       Account account, Map<String, String> expectedAnnotations) {
     // Act
     Map<String, String> runnerServiceAccountAnnotations =
-        AccountUtils.getRunnerServiceAccountAnnotations(account);
+        AccountUtil.getRunnerServiceAccountAnnotations(account);
     // Assert
     assertThat(runnerServiceAccountAnnotations)
         .containsExactlyInAnyOrderEntriesOf(expectedAnnotations);
@@ -83,7 +83,7 @@ class AccountUtilsTest {
 
     // Act
     SampleService data =
-        AccountUtils.getServiceWithCategory(services, "category", SampleService.class);
+        AccountUtil.getServiceWithCategory(services, "category", SampleService.class);
 
     // Assert
     assertThat(data.key).isEqualTo("value");
@@ -96,7 +96,7 @@ class AccountUtilsTest {
 
     // Act & Assert
     assertThatThrownBy(
-            () -> AccountUtils.getServiceWithCategory(services, "missing", SampleService.class))
+            () -> AccountUtil.getServiceWithCategory(services, "missing", SampleService.class))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("No service with category:[missing] found");
   }

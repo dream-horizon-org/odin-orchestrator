@@ -16,7 +16,7 @@ import org.xbill.DNS.Type;
 
 @UtilityClass
 @Slf4j
-public class DnsUtils {
+public class DnsUtil {
 
   @SneakyThrows
   public boolean isDnsResolvableToTarget(String dnsName, Set<String> targets) {
