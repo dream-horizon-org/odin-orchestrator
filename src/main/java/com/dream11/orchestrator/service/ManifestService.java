@@ -173,15 +173,15 @@ public class ManifestService {
                 Map.entry("ODIN_DSL_USERNAME", this.appConfig.getDsl().getUsername()),
                 Map.entry("ODIN_DSL_PASSWORD", this.appConfig.getDsl().getPassword()),
                 Map.entry(
-                    "BASE_CONFIG",
+                    "ODIN_BASE_CONFIG",
                     JsonUtil.toJsonString(
                         this.manifestServiceDto.getComponentAction().getBaseConfig())),
                 Map.entry(
-                    "FLAVOUR_CONFIG",
+                    "ODIN_FLAVOUR_CONFIG",
                     JsonUtil.toJsonString(
                         this.manifestServiceDto.getComponentAction().getFlavourConfig())),
                 Map.entry(
-                    "COMPONENT_METADATA",
+                    "ODIN_COMPONENT_METADATA",
                     JsonUtil.toJsonString(
                         ManifestUtil.buildComponentMetaData(
                             this.manifestServiceDto.getComponentAction(),
@@ -189,7 +189,7 @@ public class ManifestService {
                             this.manifestServiceDto.getDeploymentNamespace(),
                             this.manifestServiceDto.getOrgId(),
                             this.manifestServiceDto.getDeploymentId()))),
-                Map.entry("DSL_METADATA", JsonUtil.toJsonString(this.buildDslMetadata())),
+                Map.entry("ODIN_DSL_METADATA", JsonUtil.toJsonString(this.buildDslMetadata())),
                 Map.entry(
                     "ODIN_CLOUD_PROVIDER",
                     this.manifestServiceDto
@@ -223,7 +223,7 @@ public class ManifestService {
 
     if (this.manifestServiceDto.getComponentAction().getOperationConfig() != null) {
       stringData.put(
-          "OPERATION_CONFIG",
+          "ODIN_OPERATION_CONFIG",
           JsonUtil.toJsonString(this.manifestServiceDto.getComponentAction().getOperationConfig()));
     }
 
