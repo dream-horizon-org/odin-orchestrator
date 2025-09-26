@@ -27,12 +27,12 @@ class ApplicationUtilTest {
   static ExecutorService EXECUTOR;
 
   @BeforeAll
-  static void setUpAll() {
+  static void setup() {
     EXECUTOR = Executors.newFixedThreadPool(3);
   }
 
   @AfterAll
-  static void tearDownAll() {
+  static void tearDown() {
     if (EXECUTOR != null) {
       EXECUTOR.shutdownNow();
     }

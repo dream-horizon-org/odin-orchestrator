@@ -221,7 +221,7 @@ public class ManifestService {
       }
     }
 
-    if (this.manifestServiceDto.getComponentAction().getOperationConfig() != null) {
+    if (this.manifestServiceDto.getComponentAction().getStage().getName().equals("operate")) {
       stringData.put(
           "ODIN_OPERATION_CONFIG",
           JsonUtil.toJsonString(this.manifestServiceDto.getComponentAction().getOperationConfig()));
