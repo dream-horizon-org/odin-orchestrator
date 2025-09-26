@@ -13,9 +13,7 @@ public enum OrchestratorExceptionType {
   EXECUTOR_SERVICE_UNINITIALIZED(
       "OE06", "Deployer service object uninitialized. Call init() first"),
   GRAPH_ALREADY_INITIALIZED("OE07", "Graph already initialized"),
-  INVALID_ACCOUNT_OBJECT("OE08", "Invalid account object"),
   INVALID_COMPONENT_ACTION_ID("OE09", "Component action not found for actionId : %d"),
-  INVALID_COMPONENTS_DATA("OE10", "Invalid component actions list or components list"),
   MANIFEST_SERVICE_UNINITIALIZED(
       "OE11", "Manifest service object uninitialized. Call init() first"),
   NAMESPACE_CREATION_FAILED("OE12", "Namespace creation failed for %s with error %s"),

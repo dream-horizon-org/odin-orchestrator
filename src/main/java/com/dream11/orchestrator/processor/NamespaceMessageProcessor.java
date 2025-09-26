@@ -1,10 +1,10 @@
 package com.dream11.orchestrator.processor;
 
 import com.dream11.orchestrator.constants.Constants;
+import com.dream11.orchestrator.constants.ResponseMessageType;
+import com.dream11.orchestrator.constants.TaskStatus;
 import com.dream11.orchestrator.dto.ResponseMessage;
 import com.dream11.orchestrator.dto.account.servicedata.K8sServiceData;
-import com.dream11.orchestrator.dto.constants.ResponseMessageType;
-import com.dream11.orchestrator.dto.constants.TaskStatus;
 import com.dream11.orchestrator.dto.request.NamespaceRequestMessageBody;
 import com.dream11.orchestrator.dto.request.RequestMessage;
 import com.dream11.orchestrator.provisioner.NamespaceProvider;
@@ -42,6 +42,7 @@ public class NamespaceMessageProcessor implements MessageProcessor {
               namespaceRequestMessageBody.getAccount().getServices(),
               Constants.CATEGORY_KUBERNETES,
               K8sServiceData.class);
+      ApplicationUtil.validate(k8sServiceData);
       if (k8sServiceData.getClusters().isEmpty()) {
         log.info(
             String.format(

@@ -6,11 +6,11 @@ import static com.dream11.orchestrator.exception.OrchestratorExceptionType.EXECU
 import static com.dream11.orchestrator.exception.OrchestratorExceptionType.RUNNER_DISCOVERY_OUTPUT_NOT_FOUND;
 
 import com.dream11.orchestrator.constants.Constants;
+import com.dream11.orchestrator.constants.ResponseMessageType;
+import com.dream11.orchestrator.constants.TaskStatus;
 import com.dream11.orchestrator.dto.ManifestServiceDto;
 import com.dream11.orchestrator.dto.ResponseData;
 import com.dream11.orchestrator.dto.ResponseMessage;
-import com.dream11.orchestrator.dto.constants.ResponseMessageType;
-import com.dream11.orchestrator.dto.constants.TaskStatus;
 import com.dream11.orchestrator.dto.request.ComponentAction;
 import com.dream11.orchestrator.dto.request.ServiceRequestMessageBody;
 import com.dream11.orchestrator.exception.OrchestratorException;
@@ -73,7 +73,7 @@ public class ExecutorService {
     log.info(
         "Executing service:{}, env:{}",
         this.serviceRequestMessageBody.getServiceName(),
-        this.serviceRequestMessageBody.getEnvName());
+        this.serviceRequestMessageBody.getEnvironmentName());
     log.debug(
         "Executing service request message body : {}", this.serviceRequestMessageBody.toString());
     this.kubernetesRunnerProvisioner.provision(this.namespace);
@@ -85,7 +85,7 @@ public class ExecutorService {
     log.info(
         "Resuming execution for service:{}, env:{}",
         this.serviceRequestMessageBody.getServiceName(),
-        this.serviceRequestMessageBody.getEnvName());
+        this.serviceRequestMessageBody.getEnvironmentName());
     log.debug(
         "Resuming execution for service request message body : {}",
         this.serviceRequestMessageBody.toString());
@@ -145,10 +145,10 @@ public class ExecutorService {
         log.debug("Component operationConfig:{}", componentAction.getOperationConfig());
       }
       // TODO figure out deployment namespace
-      String deploymentNamespace = this.serviceRequestMessageBody.getEnvName();
+      String deploymentNamespace = this.serviceRequestMessageBody.getEnvironmentName();
       this.manifestService.init(
           ManifestServiceDto.builder()
-              .environmentName(this.serviceRequestMessageBody.getEnvName())
+              .environmentName(this.serviceRequestMessageBody.getEnvironmentName())
               .serviceName(this.serviceRequestMessageBody.getServiceName())
               .deploymentId(this.deploymentId)
               .componentAction(componentAction)

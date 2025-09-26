@@ -3,7 +3,7 @@ package com.dream11.orchestrator.graph;
 import static com.dream11.orchestrator.exception.OrchestratorExceptionType.GRAPH_ALREADY_INITIALIZED;
 import static com.dream11.orchestrator.exception.OrchestratorExceptionType.UPDATING_VISIBLE_GRAPH_NODE_FAILED;
 
-import com.dream11.orchestrator.dto.constants.TaskStatus;
+import com.dream11.orchestrator.constants.TaskStatus;
 import com.dream11.orchestrator.dto.request.ComponentAction;
 import com.dream11.orchestrator.dto.request.ServiceRequestMessageBody;
 import com.dream11.orchestrator.exception.OrchestratorException;

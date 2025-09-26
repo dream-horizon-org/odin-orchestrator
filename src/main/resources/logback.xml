@@ -1,9 +1,9 @@
 <configuration scan="true" scanPeriod="1 seconds">
-  <property scope="context" name="HOSTNAME" value="${HOSTNAME}"/>
-  <appender name="STDOUT" class="com.dream11.orchestrator.appender.CustomConsoleAppender">
+  <conversionRule conversionWord="traceId" converterClass="com.dream11.orchestrator.logging.TraceIdConverter"/>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>
-        %date %highlight(%+5level) %-26thread %logger{36} [%file:%line] [%marker] %green(%msg) %n
+        %date %highlight(%+5level) %traceId %-26thread %logger{36} [%file:%line] %green(%msg) %n
       </pattern>
     </encoder>
   </appender>

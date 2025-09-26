@@ -2,8 +2,8 @@ package com.dream11.orchestrator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.dream11.orchestrator.dto.constants.ResponseMessageType;
-import com.dream11.orchestrator.dto.constants.TaskStatus;
+import com.dream11.orchestrator.constants.ResponseMessageType;
+import com.dream11.orchestrator.constants.TaskStatus;
 import com.dream11.orchestrator.inject.AppContext;
 import com.dream11.orchestrator.inject.ConfigModule;
 import com.dream11.orchestrator.inject.MainModule;
@@ -87,12 +87,12 @@ class ServiceOperationsIT {
         this.getResponse(),
         taskId,
         TaskStatus.FAILED.name(),
-        "Invalid component actions list or components list");
+        "body.componentActions[0].name: must not be blank");
     this.assertServiceResponse(
         this.getResponse(),
         taskId,
         TaskStatus.FAILED.name(),
-        "Invalid component actions list or components list");
+        "body.componentActions[0].name: must not be blank");
   }
 
   @Test
@@ -102,15 +102,23 @@ class ServiceOperationsIT {
     long taskId = 2;
     this.compressAndSendRequest(
         this.buildRequestMessage(taskId, TestUtil.getComponentAction("comp1", "validate", "{}")));
-
+    List<String> errorMessages =
+        List.of(
+            "accounts.account.category: must not be blank",
+            "Component action provider must be same as account provider",
+            "accounts.account.name: must not be blank",
+            "accounts.account.provider: must not be blank");
     // Act
     ORCHESTRATOR.start();
 
     // Assert
-    this.assertComponentResponse(
-        this.getResponse(), taskId, TaskStatus.FAILED.name(), "Invalid account object");
-    this.assertServiceResponse(
-        this.getResponse(), taskId, TaskStatus.FAILED.name(), "Invalid account object");
+    JSONObject componentResponse = this.getResponse();
+    this.assertComponentResponse(componentResponse, taskId, TaskStatus.FAILED.name(), null);
+    assertThat(componentResponse.getString("error")).contains(errorMessages);
+
+    JSONObject serviceResponse = this.getResponse();
+    this.assertServiceResponse(serviceResponse, taskId, TaskStatus.FAILED.name(), null);
+    assertThat(serviceResponse.getString("error")).contains(errorMessages);
   }
 
   @Test
@@ -181,7 +189,7 @@ class ServiceOperationsIT {
     ORCHESTRATOR.start();
 
     // Assert
-    JSONObject componentResponse = getResponse();
+    JSONObject componentResponse = this.getResponse();
     String componentName = componentResponse.getJSONObject("data").getString("componentName");
     this.assertComponentResponse(
         componentResponse,
@@ -189,14 +197,14 @@ class ServiceOperationsIT {
         componentStatuses.get(componentName).name(),
         componentErrors.get(componentName));
 
-    componentResponse = getResponse();
+    componentResponse = this.getResponse();
     componentName = componentResponse.getJSONObject("data").getString("componentName");
     this.assertComponentResponse(
         componentResponse,
         taskId,
         componentStatuses.get(componentName).name(),
         componentErrors.get(componentName));
-    componentResponse = getResponse();
+    componentResponse = this.getResponse();
     componentName = componentResponse.getJSONObject("data").getString("componentName");
     this.assertComponentResponse(
         componentResponse,
@@ -204,7 +212,7 @@ class ServiceOperationsIT {
         componentStatuses.get(componentName).name(),
         componentErrors.get(componentName));
 
-    JSONObject serviceResponse = getResponse();
+    JSONObject serviceResponse = this.getResponse();
     this.assertServiceResponse(serviceResponse, taskId, TaskStatus.FAILED.name(), null);
   }
 

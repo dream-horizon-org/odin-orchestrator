@@ -1,6 +1,6 @@
 package com.dream11.orchestrator.util;
 
-import com.dream11.orchestrator.dto.constants.RequestMessageType;
+import com.dream11.orchestrator.constants.RequestMessageType;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.NamespaceBuilder;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
@@ -77,7 +77,7 @@ public class TestUtil {
                 "clusters" : [
                   {
                     "name": "dev",
-                    "kubeconfig": "${BASE64_ENCODED_KUBECONFIG!''}",
+                    "kubeconfig": "${BASE64_ENCODED_KUBECONFIG!'ZHVtbXkK'}",
                     "namespaceConfig": {
                       "provider": {
                         "name": "${NAMESPACE_PROVIDER!'ODIN'}",

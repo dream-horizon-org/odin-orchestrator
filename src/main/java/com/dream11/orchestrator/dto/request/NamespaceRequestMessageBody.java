@@ -1,7 +1,10 @@
 package com.dream11.orchestrator.dto.request;
 
+import com.dream11.orchestrator.constants.NamespaceAction;
 import com.dream11.orchestrator.dto.account.Account;
-import com.dream11.orchestrator.dto.constants.NamespaceAction;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,8 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NamespaceRequestMessageBody implements RequestMessageBody {
-  Account account;
-  NamespaceAction action;
-  String name;
+  @NotNull @Valid Account account;
+  @NotNull NamespaceAction action;
+  @NotBlank String name;
   long orgId;
 }

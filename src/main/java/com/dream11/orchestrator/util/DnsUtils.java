@@ -1,7 +1,5 @@
 package com.dream11.orchestrator.util;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,18 +17,6 @@ import org.xbill.DNS.Type;
 @UtilityClass
 @Slf4j
 public class DnsUtils {
-
-  public boolean isValidIPAddress(String ip) {
-    if (ip == null || ip.isEmpty()) {
-      return false;
-    }
-    try {
-      InetAddress inet = InetAddress.getByName(ip);
-      return inet.getHostAddress().equals(ip);
-    } catch (UnknownHostException e) {
-      return false;
-    }
-  }
 
   @SneakyThrows
   public boolean isDnsResolvableToTarget(String dnsName, Set<String> targets) {
