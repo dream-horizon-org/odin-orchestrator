@@ -197,29 +197,24 @@ public class TestUtil {
     return Objects.nonNull(deployment) ? Optional.of(deployment) : Optional.empty();
   }
 
+  @SneakyThrows
   public String compressAndEncode(String data) {
-    try {
-      byte[] inputBytes = data.getBytes(StandardCharsets.UTF_8);
+    byte[] inputBytes = data.getBytes(StandardCharsets.UTF_8);
+    Deflater deflater = new Deflater();
+    deflater.setInput(inputBytes);
+    deflater.finish();
 
-      Deflater deflater = new Deflater();
-      deflater.setInput(inputBytes);
-      deflater.finish();
+    byte[] buffer = new byte[1024];
+    int compressedDataLength;
 
-      byte[] buffer = new byte[1024];
-      int compressedDataLength;
-
-      try (java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream()) {
-        while (!deflater.finished()) {
-          compressedDataLength = deflater.deflate(buffer);
-          outputStream.write(buffer, 0, compressedDataLength);
-        }
-        return Base64.getEncoder().encodeToString(outputStream.toByteArray());
-      } finally {
-        deflater.end();
+    try (java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream()) {
+      while (!deflater.finished()) {
+        compressedDataLength = deflater.deflate(buffer);
+        outputStream.write(buffer, 0, compressedDataLength);
       }
-    } catch (Exception e) {
-      log.error("Error while compressing data {}", e.getMessage(), e);
-      return data;
+      return Base64.getEncoder().encodeToString(outputStream.toByteArray());
+    } finally {
+      deflater.end();
     }
   }
 }
