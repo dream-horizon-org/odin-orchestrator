@@ -17,7 +17,6 @@
     <lombok.version>1.18.30</lombok.version>
     <slf4j.version>2.0.17</slf4j.version>
     <logback.version>1.5.18</logback.version>
-    <logstash-encoder.version>8.1</logstash-encoder.version>
     <hibernate-validator.version>8.0.0.Final</hibernate-validator.version>
     <jakarta.el.version>4.0.2</jakarta.el.version>
     <message-kit.version>0.0.3</message-kit.version>
@@ -127,12 +126,6 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>${logback.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>net.logstash.logback</groupId>
-      <artifactId>logstash-logback-encoder</artifactId>
-      <version>${logstash-encoder.version}</version>
     </dependency>
 
     <dependency>
