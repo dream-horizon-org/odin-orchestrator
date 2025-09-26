@@ -14,7 +14,7 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.tuple.Pair;
 
 @UtilityClass
-public class JsonUtils {
+public class JsonUtil {
 
   private static final ObjectMapper OBJECT_MAPPER = AppContext.getObjectMapper();
 

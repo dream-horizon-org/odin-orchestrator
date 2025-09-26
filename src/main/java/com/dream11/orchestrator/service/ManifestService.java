@@ -8,9 +8,9 @@ import com.dream11.orchestrator.dto.ManifestServiceDto;
 import com.dream11.orchestrator.dto.account.servicedata.K8sServiceData;
 import com.dream11.orchestrator.dto.metadata.DslMetaData;
 import com.dream11.orchestrator.exception.OrchestratorException;
-import com.dream11.orchestrator.util.AccountUtils;
-import com.dream11.orchestrator.util.JsonUtils;
-import com.dream11.orchestrator.util.ManifestUtils;
+import com.dream11.orchestrator.util.AccountUtil;
+import com.dream11.orchestrator.util.JsonUtil;
+import com.dream11.orchestrator.util.ManifestUtil;
 import com.google.inject.Inject;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
@@ -64,12 +64,12 @@ public class ManifestService {
   public void init(ManifestServiceDto manifestServiceDto) {
     this.manifestServiceDto = manifestServiceDto;
     this.namespace =
-        ManifestUtils.getNamespace(
+        ManifestUtil.getNamespace(
             manifestServiceDto.getEnvironmentName(),
             manifestServiceDto.getServiceName(),
             manifestServiceDto.getDeploymentId());
     this.manifestName =
-        ManifestUtils.getManifestName(
+        ManifestUtil.getManifestName(
             manifestServiceDto.getComponentAction().getName(),
             manifestServiceDto.getComponentAction().getId());
   }
@@ -174,22 +174,22 @@ public class ManifestService {
                 Map.entry("ODIN_DSL_PASSWORD", this.appConfig.getDsl().getPassword()),
                 Map.entry(
                     "BASE_CONFIG",
-                    JsonUtils.toJsonString(
+                    JsonUtil.toJsonString(
                         this.manifestServiceDto.getComponentAction().getBaseConfig())),
                 Map.entry(
                     "FLAVOUR_CONFIG",
-                    JsonUtils.toJsonString(
+                    JsonUtil.toJsonString(
                         this.manifestServiceDto.getComponentAction().getFlavourConfig())),
                 Map.entry(
                     "COMPONENT_METADATA",
-                    JsonUtils.toJsonString(
-                        ManifestUtils.buildComponentMetaData(
+                    JsonUtil.toJsonString(
+                        ManifestUtil.buildComponentMetaData(
                             this.manifestServiceDto.getComponentAction(),
                             this.manifestServiceDto.getEnvironmentName(),
                             this.manifestServiceDto.getDeploymentNamespace(),
                             this.manifestServiceDto.getOrgId(),
                             this.manifestServiceDto.getDeploymentId()))),
-                Map.entry("DSL_METADATA", JsonUtils.toJsonString(this.buildDslMetadata())),
+                Map.entry("DSL_METADATA", JsonUtil.toJsonString(this.buildDslMetadata())),
                 Map.entry(
                     "ODIN_CLOUD_PROVIDER",
                     this.manifestServiceDto
@@ -199,18 +199,18 @@ public class ManifestService {
                         .getProvider()),
                 Map.entry(
                     "ODIN_CLOUD_PROVIDER_DATA",
-                    JsonUtils.toJsonString(
+                    JsonUtil.toJsonString(
                         this.manifestServiceDto
                             .getComponentAction()
                             .getAccounts()
                             .getAccount()
                             .getAccountData()))));
 
-    if (AccountUtils.hasServiceWithCategory(
+    if (AccountUtil.hasServiceWithCategory(
         this.manifestServiceDto.getComponentAction().getAccounts().getAccount(),
         Constants.CATEGORY_KUBERNETES)) {
       K8sServiceData k8sServiceData =
-          AccountUtils.getServiceWithCategory(
+          AccountUtil.getServiceWithCategory(
               this.manifestServiceDto.getComponentAction().getAccounts().getAccount().getServices(),
               Constants.CATEGORY_KUBERNETES,
               K8sServiceData.class);
@@ -224,8 +224,7 @@ public class ManifestService {
     if (this.manifestServiceDto.getComponentAction().getOperationConfig() != null) {
       stringData.put(
           "OPERATION_CONFIG",
-          JsonUtils.toJsonString(
-              this.manifestServiceDto.getComponentAction().getOperationConfig()));
+          JsonUtil.toJsonString(this.manifestServiceDto.getComponentAction().getOperationConfig()));
     }
 
     return new SecretBuilder()
@@ -241,7 +240,7 @@ public class ManifestService {
         .withMetadata(
             this.buildObjectMeta(
                 this.manifestName,
-                AccountUtils.getRunnerServiceAccountAnnotations(
+                AccountUtil.getRunnerServiceAccountAnnotations(
                     this.manifestServiceDto.getComponentAction().getAccounts().getAccount())))
         .build();
   }

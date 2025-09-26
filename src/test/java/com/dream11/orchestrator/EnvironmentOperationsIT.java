@@ -10,7 +10,7 @@ import com.dream11.orchestrator.exception.OrchestratorException;
 import com.dream11.orchestrator.inject.AppContext;
 import com.dream11.orchestrator.inject.ConfigModule;
 import com.dream11.orchestrator.inject.MainModule;
-import com.dream11.orchestrator.util.ConfigUtils;
+import com.dream11.orchestrator.util.ConfigUtil;
 import com.dream11.orchestrator.util.TestUtil;
 import com.dream11.queue.Message;
 import com.dream11.queue.impl.sqs.SqsConfig;
@@ -86,7 +86,7 @@ class EnvironmentOperationsIT {
     try {
       AppContext.initialize(
           List.of(
-              new MainModule(), ConfigModule.builder().config(ConfigUtils.readConfig()).build()));
+              new MainModule(), ConfigModule.builder().config(ConfigUtil.readConfig()).build()));
     } catch (OrchestratorException e) {
       // Ignored intentionally
     }

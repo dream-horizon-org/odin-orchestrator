@@ -6,7 +6,7 @@ import com.dream11.orchestrator.config.AppConfig;
 import com.dream11.orchestrator.dto.ManifestServiceDto;
 import com.dream11.orchestrator.dto.request.ComponentAction;
 import com.dream11.orchestrator.inject.AppContext;
-import com.dream11.orchestrator.util.ConfigUtils;
+import com.dream11.orchestrator.util.ConfigUtil;
 import com.dream11.orchestrator.util.TestUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.fabric8.kubernetes.api.model.ConfigMap;
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 class ManifestServiceTest {
 
-  static final AppConfig APP_CONFIG = ConfigUtils.readConfig();
+  static final AppConfig APP_CONFIG = ConfigUtil.readConfig();
 
   static final ObjectMapper OBJECT_MAPPER = AppContext.getObjectMapper();
   static String ENVIRONMENT_NAME;

@@ -18,8 +18,8 @@ import com.dream11.orchestrator.dto.discovery.RecordAction;
 import com.dream11.orchestrator.dto.request.ComponentAction;
 import com.dream11.orchestrator.exception.OrchestratorException;
 import com.dream11.orchestrator.inject.AppContext;
-import com.dream11.orchestrator.util.DnsUtils;
-import com.dream11.orchestrator.util.JsonUtils;
+import com.dream11.orchestrator.util.DnsUtil;
+import com.dream11.orchestrator.util.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
@@ -370,7 +370,7 @@ public class DiscoveryClientService {
   public boolean doesDNSResolveCorrectly(
       JsonNode runnerDiscoveryOutputNode, JsonNode userDataDiscoveryNode) {
     List<Pair<String, String>> endpoints =
-        JsonUtils.extractMatchingLeafNodes(runnerDiscoveryOutputNode, userDataDiscoveryNode);
+        JsonUtil.extractMatchingLeafNodes(runnerDiscoveryOutputNode, userDataDiscoveryNode);
     List<Pair<String, String>> endpointsCreatedByOdin =
         endpoints.stream()
             .filter(pair -> !pair.getLeft().equalsIgnoreCase(pair.getRight()))
@@ -380,7 +380,7 @@ public class DiscoveryClientService {
 
     for (int counter = 1; counter < this.appConfig.getHealthcheck().getMaxRetries(); counter++) {
       for (Pair<String, String> stringStringPair : endpointsCreatedByOdin) {
-        if (DnsUtils.isDnsResolvableToTarget(
+        if (DnsUtil.isDnsResolvableToTarget(
             stringStringPair.getRight(),
             Arrays.stream(stringStringPair.getLeft().split(",")).collect(Collectors.toSet()))) {
           successfullyResolvedDns.add(stringStringPair.getRight());

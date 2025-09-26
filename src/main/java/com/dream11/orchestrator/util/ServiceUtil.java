@@ -8,7 +8,7 @@ import java.util.List;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class ServiceUtils {
+public class ServiceUtil {
 
   public ComponentAction getComponentActionById(
       Integer componentActionId, List<ComponentAction> componentActions) {

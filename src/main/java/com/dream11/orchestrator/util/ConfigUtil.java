@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @UtilityClass
-public final class ConfigUtils {
+public final class ConfigUtil {
   @SneakyThrows
   public AppConfig readConfig() {
     ConfigFactory.invalidateCaches();
@@ -19,8 +19,8 @@ public final class ConfigUtils {
         ConfigFactory.load("application.conf")
             .withFallback(ConfigFactory.load("application-default.conf"))
             .resolve();
-    config = ConfigUtils.parseArrayConfig(config, "runner.hostVolumeMounts").withFallback(config);
-    config = ConfigUtils.parseArrayConfig(config, "runner.dockerSecrets").withFallback(config);
+    config = ConfigUtil.parseArrayConfig(config, "runner.hostVolumeMounts").withFallback(config);
+    config = ConfigUtil.parseArrayConfig(config, "runner.dockerSecrets").withFallback(config);
 
     AppConfig appConfig =
         AppContext.getObjectMapper().convertValue(config.root().unwrapped(), AppConfig.class);

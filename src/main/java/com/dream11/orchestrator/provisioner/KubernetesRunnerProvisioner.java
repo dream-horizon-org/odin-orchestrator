@@ -9,7 +9,7 @@ import com.dream11.orchestrator.constants.Constants;
 import com.dream11.orchestrator.exception.OrchestratorException;
 import com.dream11.orchestrator.inject.AppContext;
 import com.dream11.orchestrator.service.ExecutorService;
-import com.dream11.orchestrator.util.ManifestUtils;
+import com.dream11.orchestrator.util.ManifestUtil;
 import com.google.inject.Inject;
 import io.fabric8.kubernetes.api.model.KubernetesList;
 import io.fabric8.kubernetes.api.model.LabelSelectorBuilder;
@@ -210,7 +210,7 @@ public class KubernetesRunnerProvisioner {
                                     .withMatchLabels(
                                         Map.of(
                                             "job-name",
-                                            ManifestUtils.getManifestName(
+                                            ManifestUtil.getManifestName(
                                                 componentName, componentActionId)))
                                     .build())
                             .resources()

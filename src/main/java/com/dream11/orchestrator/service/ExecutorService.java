@@ -18,8 +18,8 @@ import com.dream11.orchestrator.graph.DagBuilder;
 import com.dream11.orchestrator.inject.AppContext;
 import com.dream11.orchestrator.provisioner.KubernetesRunnerProvisioner;
 import com.dream11.orchestrator.util.ApplicationUtil;
-import com.dream11.orchestrator.util.ManifestUtils;
-import com.dream11.orchestrator.util.ServiceUtils;
+import com.dream11.orchestrator.util.ManifestUtil;
+import com.dream11.orchestrator.util.ServiceUtil;
 import com.dream11.queue.producer.MessageProducer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -106,7 +106,7 @@ public class ExecutorService {
             this.dagBuilder.getNextComponentActionIds().stream()
                 .map(
                     actionId ->
-                        ServiceUtils.getComponentActionById(
+                        ServiceUtil.getComponentActionById(
                             actionId, this.serviceRequestMessageBody.getComponentActions()))
                 .collect(Collectors.toSet());
         if (!componentActionsToDeploy.isEmpty()) {
@@ -211,7 +211,7 @@ public class ExecutorService {
   void checkStateAndUpdateDag(Set<ComponentAction> componentActions) {
     for (ComponentAction componentAction : componentActions) {
       String manifestName =
-          ManifestUtils.getManifestName(componentAction.getName(), componentAction.getId());
+          ManifestUtil.getManifestName(componentAction.getName(), componentAction.getId());
       // Skip componentAction if Job does not exists
       if (!kubernetesRunnerProvisioner.jobExists(manifestName, namespace)) {
         // If a job corresponding to an action does not exist, check and clean-up resources.

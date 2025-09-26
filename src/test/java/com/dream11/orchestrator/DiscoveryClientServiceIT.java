@@ -22,7 +22,7 @@ import com.dream11.orchestrator.exception.OrchestratorException;
 import com.dream11.orchestrator.inject.ConfigModule;
 import com.dream11.orchestrator.inject.MainModule;
 import com.dream11.orchestrator.service.DiscoveryClientService;
-import com.dream11.orchestrator.util.ConfigUtils;
+import com.dream11.orchestrator.util.ConfigUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.google.inject.Guice;
@@ -53,7 +53,7 @@ class DiscoveryClientServiceIT {
                         "{\"responseList\":[{\"status\":\"SUCCESSFUL\",\"message\":null,\"id\":\"1\"}]}")));
     Guice.createInjector(
             new MainModule(),
-            ConfigModule.builder().config(ConfigUtils.readConfig()).build(),
+            ConfigModule.builder().config(ConfigUtil.readConfig()).build(),
             BoundFieldModule.of(this))
         .injectMembers(this);
 

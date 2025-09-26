@@ -43,30 +43,26 @@ public class ApplicationUtil {
     }
   }
 
+  @SneakyThrows
   public static String decodeAndDecompress(String base64Data) {
-    try {
-      byte[] compressedData = Base64.getDecoder().decode(base64Data);
-      Inflater inflater = new Inflater();
-      inflater.setInput(compressedData);
+    byte[] compressedData = Base64.getDecoder().decode(base64Data);
+    Inflater inflater = new Inflater();
+    inflater.setInput(compressedData);
 
-      byte[] buffer = new byte[1024];
-      int decompressedDataLength;
+    byte[] buffer = new byte[1024];
+    int decompressedDataLength;
 
-      // Decompress the data
-      try (java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream()) {
-        while (!inflater.finished()) {
-          decompressedDataLength = inflater.inflate(buffer);
-          outputStream.write(buffer, 0, decompressedDataLength);
-        }
-        String output = outputStream.toString(StandardCharsets.UTF_8);
-        log.info("Decompressed data: {}", output);
-        return output;
-      } finally {
-        inflater.end();
+    // Decompress the data
+    try (java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream()) {
+      while (!inflater.finished()) {
+        decompressedDataLength = inflater.inflate(buffer);
+        outputStream.write(buffer, 0, decompressedDataLength);
       }
-    } catch (Exception e) {
-      log.error("Error while decompressing data {}", e.getMessage(), e);
-      return null;
+      String output = outputStream.toString(StandardCharsets.UTF_8);
+      log.info("Decompressed data: {}", output);
+      return output;
+    } finally {
+      inflater.end();
     }
   }
 

@@ -9,7 +9,7 @@ import com.dream11.orchestrator.dto.request.NamespaceRequestMessageBody;
 import com.dream11.orchestrator.dto.request.RequestMessage;
 import com.dream11.orchestrator.provisioner.NamespaceProvider;
 import com.dream11.orchestrator.provisioner.NamespaceProviderFactory;
-import com.dream11.orchestrator.util.AccountUtils;
+import com.dream11.orchestrator.util.AccountUtil;
 import com.dream11.orchestrator.util.ApplicationUtil;
 import com.dream11.queue.producer.MessageProducer;
 import com.google.inject.Inject;
@@ -38,7 +38,7 @@ public class NamespaceMessageProcessor implements MessageProcessor {
 
     try {
       K8sServiceData k8sServiceData =
-          AccountUtils.getServiceWithCategory(
+          AccountUtil.getServiceWithCategory(
               namespaceRequestMessageBody.getAccount().getServices(),
               Constants.CATEGORY_KUBERNETES,
               K8sServiceData.class);
@@ -62,7 +62,7 @@ public class NamespaceMessageProcessor implements MessageProcessor {
         case CREATE_ENVIRONMENT -> namespaceProvider.createNamespace(
             namespaceRequestMessageBody.getName(),
             k8sServiceData.getClusters(),
-            AccountUtils.getResourceLabels(namespaceRequestMessageBody.getAccount()),
+            AccountUtil.getResourceLabels(namespaceRequestMessageBody.getAccount()),
             namespaceRequestMessageBody.getOrgId());
 
         case DELETE_ENVIRONMENT -> namespaceProvider.deleteNamespace(
