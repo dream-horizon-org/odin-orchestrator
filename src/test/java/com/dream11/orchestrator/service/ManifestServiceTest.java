@@ -27,6 +27,7 @@ import io.fabric8.kubernetes.api.model.batch.v1.Job;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
@@ -90,7 +91,6 @@ class ManifestServiceTest {
     Job job = MANIFEST_SERVICE.createJob();
 
     // Assert
-    // Metadata
     assertThat(job.getMetadata().getName())
         .isEqualTo(COMPONENT_NAME + "-" + COMPONENT_ACTION.getId());
     assertThat(job.getMetadata().getNamespace()).isEqualTo(NAMESPACE);
@@ -107,41 +107,13 @@ class ManifestServiceTest {
     assertThat(podSpec.getImagePullSecrets()).hasSize(1);
     assertThat(podSpec.getImagePullSecrets()).extracting("name").containsExactly("test");
 
-    // Volumes
-    assertThat(podSpec.getVolumes())
-        .containsAll(
-            APP_CONFIG.getRunner().getHostVolumeMounts().stream()
-                .map(
-                    hostVolumeMount ->
-                        new VolumeBuilder()
-                            .withName(hostVolumeMount.getName())
-                            .withHostPath(
-                                new HostPathVolumeSourceBuilder()
-                                    .withType("Directory")
-                                    .withPath(hostVolumeMount.getHostPath())
-                                    .build())
-                            .build())
-                .toList());
-
-    assertThat(podSpec.getVolumes())
-        .containsAll(
-            List.of(
-                new VolumeBuilder()
-                    .withName(Constants.RUNNER_POD_VOLUME_NAME)
-                    .withEmptyDir(new EmptyDirVolumeSource())
-                    .build(),
-                new VolumeBuilder()
-                    .withName(Constants.SHARED_RUNNER_POD_VOLUME_NAME)
-                    .withEmptyDir(new EmptyDirVolumeSource())
-                    .build()));
-
-    // Container
     assertThat(podSpec.getContainers()).hasSize(2);
     assertThat(podSpec.getContainers())
         .extracting("name")
         .contains(Constants.RUNNER, Constants.DIND);
     this.assertRunnerContainer(podSpec.getContainers().get(0));
     this.assertDinDContainer(podSpec.getContainers().get(1));
+    this.assertVolumes(podSpec);
   }
 
   @Test
@@ -285,6 +257,35 @@ class ManifestServiceTest {
     this.assertResources(dind);
     assertThat(this.hasVolumeMount(dind, Constants.RUNNER_POD_VOLUME_NAME, "/run")).isTrue();
     assertThat(this.hasVolumeMount(dind, Constants.SHARED_RUNNER_POD_VOLUME_NAME, "/tmp")).isTrue();
+  }
+
+  private void assertVolumes(PodSpec podSpec) {
+    assertThat(podSpec.getVolumes())
+        .containsExactlyInAnyOrderElementsOf(
+            Stream.of(
+                    APP_CONFIG.getRunner().getHostVolumeMounts().stream()
+                        .map(
+                            hostVolumeMount ->
+                                new VolumeBuilder()
+                                    .withName(hostVolumeMount.getName())
+                                    .withHostPath(
+                                        new HostPathVolumeSourceBuilder()
+                                            .withType("Directory")
+                                            .withPath(hostVolumeMount.getHostPath())
+                                            .build())
+                                    .build())
+                        .toList(),
+                    List.of(
+                        new VolumeBuilder()
+                            .withName(Constants.RUNNER_POD_VOLUME_NAME)
+                            .withEmptyDir(new EmptyDirVolumeSource())
+                            .build(),
+                        new VolumeBuilder()
+                            .withName(Constants.SHARED_RUNNER_POD_VOLUME_NAME)
+                            .withEmptyDir(new EmptyDirVolumeSource())
+                            .build()))
+                .flatMap(List::stream)
+                .toList());
   }
 
   private Map<String, String> getExpectedLabels() {
