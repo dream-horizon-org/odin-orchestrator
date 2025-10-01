@@ -2,7 +2,7 @@ FROM groovy:4.0.27-jdk21-alpine
 USER root
 ARG TARGETARCH
 
-RUN apk add bash curl jq yq docker-cli helm
+RUN apk add bash curl jq yq docker-cli helm kubectl
 
 # Install packer
 ARG PACKER_VERSION=1.14.2
