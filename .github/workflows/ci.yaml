@@ -70,7 +70,7 @@ jobs:
 
       - name: Add kind kubeconfig
         run: |
-          echo "BASE64_ENCODED_KUBECONFIG=$(cat ~/.kube/config | base64 --wrap 0)" >> $GITHUB_ENV
+          echo "BASE64_ENCODED_KUBECONFIG=$(base64 --wrap 0 < ~/.kube/config)" >> "$GITHUB_ENV"
           kind load docker-image docker.io/dream-sports-labs/odin-runner:0.0.1 --name odin
 
       - name: Test
@@ -95,11 +95,11 @@ jobs:
         run: |
           PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "PROJECT_VERSION: ${PROJECT_VERSION}"
-          if [[ ${PROJECT_VERSION} != *-SNAPSHOT ]]; then
+          if [[ "${PROJECT_VERSION}" != *-SNAPSHOT ]]; then
             echo "::error:Version must be suffixed with '-SNAPSHOT'. Concrete versions can only be released from master branch"
             exit 1
           fi
-          echo "VERSION=$PROJECT_VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION=${PROJECT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Publish docker image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
