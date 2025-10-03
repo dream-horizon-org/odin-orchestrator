@@ -48,6 +48,7 @@ public class RunnerConfig {
     @NotBlank String name;
     @NotBlank String hostPath;
     @NotBlank String mountPath;
+    @NotBlank String type = "Directory";
   }
 
   @Data
