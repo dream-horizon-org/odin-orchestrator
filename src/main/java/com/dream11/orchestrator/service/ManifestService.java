@@ -306,7 +306,7 @@ public class ManifestService {
                             .withName(hostVolumeMount.getName())
                             .withHostPath(
                                 new HostPathVolumeSourceBuilder()
-                                    .withType("Directory")
+                                    .withType(hostVolumeMount.getType())
                                     .withPath(hostVolumeMount.getHostPath())
                                     .build())
                             .build())
