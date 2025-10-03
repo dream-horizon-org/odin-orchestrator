@@ -2,5 +2,6 @@
 set -euo pipefail
 
 JAVA_OPTS="-XX:+HeapDumpOnOutOfMemoryError"
-export JVM_OPTS=${JVM_OPTS:-""}
-exec java -jar "${JAVA_OPTS}" "${JVM_OPTS}" odin-orchestrator-fat.jar
+JVM_OPTS=${JVM_OPTS:-""}
+#shellcheck disable=SC2086
+exec java -jar "${JAVA_OPTS}" ${JVM_OPTS} odin-orchestrator-fat.jar
