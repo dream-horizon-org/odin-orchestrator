@@ -27,16 +27,19 @@ public class DslStateConfig {
     @NotBlank String bucket;
     @NotBlank String region;
     String endpoint = "";
+    boolean forcePathStyle = false;
 
     @Override
-    public Map<String, String> getConfig(String key) {
+    public Map<String, Object> getConfig(String key) {
       return Map.of(
           "uri",
           String.format("s3://%s/%s", this.bucket, key),
           "endpoint",
           this.endpoint,
           "region",
-          this.region);
+          this.region,
+          "forcePathStyle",
+          this.forcePathStyle);
     }
   }
 }
