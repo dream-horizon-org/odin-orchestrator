@@ -65,13 +65,13 @@ jobs:
           platforms: linux/amd64
           push: false
           load: true
-          tags: docker.io/dream-sports-labs/odin-runner:0.0.1
+          tags: docker.io/ds-horizon/odin-runner:0.0.1
           secrets: PACKER_GITHUB_API_TOKEN=${{ secrets.PACKER_GITHUB_API_TOKEN }}
 
       - name: Add kind kubeconfig
         run: |
           echo "BASE64_ENCODED_KUBECONFIG=$(base64 --wrap 0 < ~/.kube/config)" >> "$GITHUB_ENV"
-          kind load docker-image docker.io/dream-sports-labs/odin-runner:0.0.1 --name odin
+          kind load docker-image docker.io/ds-horizon/odin-runner:0.0.1 --name odin
 
       - name: Test
         env:
@@ -79,7 +79,7 @@ jobs:
           ODIN_DSL_PASSWORD: ${{ secrets.ODIN_DSL_PASSWORD }}
           ODIN_COMPONENT_REGISTRY_PASSWORD: ${{ secrets.ODIN_COMPONENT_REGISTRY_PASSWORD }}
           ODIN_COMPONENT_REGISTRY_USERNAME: ${{ secrets.ODIN_COMPONENT_REGISTRY_USERNAME }}
-          ODIN_RUNNER_IMAGE: docker.io/dream-sports-labs/odin-runner:0.0.1
+          ODIN_RUNNER_IMAGE: docker.io/ds-horizon/odin-runner:0.0.1
         run: mvn clean verify --no-transfer-progress
 
       - name: Publish Test Report
