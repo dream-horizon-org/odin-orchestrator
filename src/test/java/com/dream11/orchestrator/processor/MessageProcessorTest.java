@@ -1,6 +1,7 @@
 package com.dream11.orchestrator.processor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.dream11.orchestrator.constants.RequestMessageType;
 import com.dream11.orchestrator.inject.AppContext;
@@ -10,8 +11,11 @@ import com.dream11.orchestrator.util.ConfigUtil;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 class MessageProcessorTest {
+
+  @Mock RequestMessageType nullRequestMessageType;
 
   @BeforeAll
   static void setup() {
@@ -35,5 +39,13 @@ class MessageProcessorTest {
 
     // Assert
     assertThat(messageProcessor).isInstanceOf(NamespaceMessageProcessor.class);
+  }
+
+  @Test
+  void testGetProcessorWithNullArgument() {
+      assertThrows(
+          NullPointerException.class,
+          () -> MessageProcessor.getProcessor(this.nullRequestMessageType),
+          "Should have thrown NullPointerException");
   }
 }

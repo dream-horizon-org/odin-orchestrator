@@ -1,5 +1,6 @@
 package com.dream11.orchestrator.processor;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,6 +29,8 @@ class ServiceProcessorTest {
   @Mock private ExecutorService executorService;
   @Mock private KubernetesRunnerProvisioner kubernetesRunnerProvisioner;
   @InjectMocks private ServiceMessageProcessor serviceMessageProcessor;
+
+  @Mock RequestMessage nullRequestMessage;
 
   @Test
   @SneakyThrows
@@ -71,5 +74,14 @@ class ServiceProcessorTest {
 
     // Assert
     verify(this.executorService, times(1)).resume();
+  }
+
+  @Test
+  void testProcessWithNullRequestMessage() {
+
+      assertThrows(
+          NullPointerException.class,
+          () -> this.serviceMessageProcessor.process(this.nullRequestMessage),
+          "Should have thrown NullPointerException");
   }
 }
