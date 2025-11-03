@@ -79,9 +79,9 @@ class ServiceProcessorTest {
   @Test
   void testProcessWithNullRequestMessage() {
 
-      assertThrows(
-          NullPointerException.class,
-          () -> this.serviceMessageProcessor.process(this.nullRequestMessage),
-          "Should have thrown NullPointerException");
+    assertThrows(
+        NullPointerException.class,
+        () -> this.serviceMessageProcessor.process(this.nullRequestMessage),
+        "Should have thrown NullPointerException");
   }
 }

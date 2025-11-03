@@ -43,9 +43,16 @@ class MessageProcessorTest {
 
   @Test
   void testGetProcessorWithNullArgument() {
-      assertThrows(
-          NullPointerException.class,
-          () -> MessageProcessor.getProcessor(this.nullRequestMessageType),
-          "Should have thrown NullPointerException");
+    assertThrows(
+        NullPointerException.class,
+        () -> MessageProcessor.getProcessor(this.nullRequestMessageType),
+        "Should have thrown NullPointerException");
+  }
+
+  @Test
+  void testGetMessageProcessorWithWrongType() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> MessageProcessor.getProcessor(RequestMessageType.valueOf("WrongType")));
   }
 }

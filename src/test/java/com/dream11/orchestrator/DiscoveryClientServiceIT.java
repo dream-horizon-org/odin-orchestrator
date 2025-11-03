@@ -29,345 +29,345 @@ import java.util.List;
 import java.util.Map;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.json.JSONObject;
-import org.json.JSONArray;
 
 @WireMockTest(httpPort = 8081)
 class DiscoveryClientServiceIT {
 
-    @Inject
-    AppConfig appConfig;
+  @Inject AppConfig appConfig;
 
-    DiscoveryClientService discoveryClientService;
+  DiscoveryClientService discoveryClientService;
 
-    @BeforeEach
-    void setup() {
-        stubFor(
-                put(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withBody(
-                                                "{\"responseList\":[{\"status\":\"SUCCESSFUL\",\"message\":null,\"id\":\"1\"}]}")));
+  @BeforeEach
+  void setup() {
+    stubFor(
+        put(urlEqualTo(DISCOVERY_ENDPOINT))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withBody(
+                        "{\"responseList\":[{\"status\":\"SUCCESSFUL\",\"message\":null,\"id\":\"1\"}]}")));
 
-        Guice.createInjector(
-                new MainModule(),
-                ConfigModule.builder().config(ConfigUtil.readConfig()).build(),
-                BoundFieldModule.of(this))
-                .injectMembers(this);
+    Guice.createInjector(
+            new MainModule(),
+            ConfigModule.builder().config(ConfigUtil.readConfig()).build(),
+            BoundFieldModule.of(this))
+        .injectMembers(this);
 
-        this.discoveryClientService = new DiscoveryClientService(this.appConfig, this.getHttpClient());
-    }
+    this.discoveryClientService = new DiscoveryClientService(this.appConfig, this.getHttpClient());
+  }
 
-    @Test
-    void testDiscoveryClientServiceDeploy() throws JsonProcessingException {
-        // Arrange
-        ComponentAction componentAction = createComponentAction();
-        componentAction.setBaseConfig(Map.of("discovery", Map.of("private", "test-route.private")));
+  @Test
+  void testDiscoveryClientServiceDeploy() throws JsonProcessingException {
+    // Arrange
+    ComponentAction componentAction = createComponentAction();
+    componentAction.setBaseConfig(Map.of("discovery", Map.of("private", "test-route.private")));
 
-        // Act
-        this.discoveryClientService.handleDiscovery(
-                1,
-                componentAction,
-                """
+    // Act
+    this.discoveryClientService.handleDiscovery(
+        1,
+        componentAction,
+        """
                         ------ODIN-DISCOVERY-MARKER-START------
                         {"private":"test-value"}
                         ------ODIN-DISCOVERY-MARKER-END------
                         """,
-                DEPLOY_ACTION_NAME);
+        DEPLOY_ACTION_NAME);
 
-        // Assert
-        verify(
-                1,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(
-                                        createDiscoveryRequestBodyForUpsert("test-route.private", "test-value", "1"))));
-    }
+    // Assert
+    verify(
+        1,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(
+                    createDiscoveryRequestBodyForUpsert("test-route.private", "test-value", "1"))));
+  }
 
-    @Test
-    void testDiscoveryClientServiceDeployMultipleKeys() throws JsonProcessingException {
-        // Arrange
-        ComponentAction componentAction = createComponentAction();
-        componentAction.setBaseConfig(
-                Map.of(
-                        "discovery", Map.of("private", "test-route.private", "public", "test-route.public")));
+  @Test
+  void testDiscoveryClientServiceDeployMultipleKeys() throws JsonProcessingException {
+    // Arrange
+    ComponentAction componentAction = createComponentAction();
+    componentAction.setBaseConfig(
+        Map.of(
+            "discovery", Map.of("private", "test-route.private", "public", "test-route.public")));
 
-        // Act
-        this.discoveryClientService.handleDiscovery(
-                1,
-                componentAction,
-                """
+    // Act
+    this.discoveryClientService.handleDiscovery(
+        1,
+        componentAction,
+        """
                         ------ODIN-DISCOVERY-MARKER-START------
                         {"private":"test-value" , "public":"test-public-value"}
                         ------ODIN-DISCOVERY-MARKER-END------
                         """,
-                DEPLOY_ACTION_NAME);
+        DEPLOY_ACTION_NAME);
 
-        // Assert
-        verify(
-                1,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(
-                                        createDiscoveryRequestBodyForUpsert("test-route.private", "test-value", "1"))));
+    // Assert
+    verify(
+        1,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(
+                    createDiscoveryRequestBodyForUpsert("test-route.private", "test-value", "1"))));
 
-        verify(
-                1,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(
-                                        createDiscoveryRequestBodyForUpsert("test-route.public", "test-public-value",
-                                                "1"))));
-    }
+    verify(
+        1,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(
+                    createDiscoveryRequestBodyForUpsert(
+                        "test-route.public", "test-public-value", "1"))));
+  }
 
-    @Test
-    void testDiscoveryClientServiceDeployWithMultipleRoutes() throws JsonProcessingException {
-        // Arrange
-        ComponentAction componentAction = createComponentAction();
-        componentAction.setBaseConfig(
-                Map.of(
-                        "discovery",
-                        Map.of(
-                                "private",
-                                List.of("test-route1.private", "test-route2.private", "test-route3.private"))));
+  @Test
+  void testDiscoveryClientServiceDeployWithMultipleRoutes() throws JsonProcessingException {
+    // Arrange
+    ComponentAction componentAction = createComponentAction();
+    componentAction.setBaseConfig(
+        Map.of(
+            "discovery",
+            Map.of(
+                "private",
+                List.of("test-route1.private", "test-route2.private", "test-route3.private"))));
 
-        // Act
-        this.discoveryClientService.handleDiscovery(
-                1,
-                componentAction,
-                """
+    // Act
+    this.discoveryClientService.handleDiscovery(
+        1,
+        componentAction,
+        """
                         ------ODIN-DISCOVERY-MARKER-START------
                         {"private":"test-value"}
                         ------ODIN-DISCOVERY-MARKER-END------
                         """,
-                DEPLOY_ACTION_NAME);
+        DEPLOY_ACTION_NAME);
 
-        // Assert
-        verify(
-                1,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(
-                                        createDiscoveryRequestBodyForUpsert(
-                                                "test-route1.private", "test-value", "1"))));
+    // Assert
+    verify(
+        1,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(
+                    createDiscoveryRequestBodyForUpsert(
+                        "test-route1.private", "test-value", "1"))));
 
-        verify(
-                1,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(
-                                        createDiscoveryRequestBodyForUpsert(
-                                                "test-route2.private", "test-value", "2"))));
+    verify(
+        1,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(
+                    createDiscoveryRequestBodyForUpsert(
+                        "test-route2.private", "test-value", "2"))));
 
-        verify(
-                1,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(
-                                        createDiscoveryRequestBodyForUpsert(
-                                                "test-route3.private", "test-value", "3"))));
-    }
+    verify(
+        1,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(
+                    createDiscoveryRequestBodyForUpsert(
+                        "test-route3.private", "test-value", "3"))));
+  }
 
-    @Test
-    void testDiscoveryClientServiceJobUndeploy() throws JsonProcessingException {
-        // Arrange
-        ComponentAction componentAction = createComponentAction();
-        componentAction.setBaseConfig(Map.of("discovery", Map.of("private", "test-route.private")));
+  @Test
+  void testDiscoveryClientServiceJobUndeploy() throws JsonProcessingException {
+    // Arrange
+    ComponentAction componentAction = createComponentAction();
+    componentAction.setBaseConfig(Map.of("discovery", Map.of("private", "test-route.private")));
 
-        // Act
-        this.discoveryClientService.handleDiscovery(
-                1,
-                componentAction,
-                """
+    // Act
+    this.discoveryClientService.handleDiscovery(
+        1,
+        componentAction,
+        """
                         ------ODIN-DISCOVERY-MARKER-START------
                         {"private":"test-value"}
                         ------ODIN-DISCOVERY-MARKER-END------
                         """,
-                UNDEPLOY_ACTION_NAME);
+        UNDEPLOY_ACTION_NAME);
 
-        // Assert
-        verify(
-                1,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(createDiscoveryRequestBodyForDelete("test-route.private", "1"))));
-    }
+    // Assert
+    verify(
+        1,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(createDiscoveryRequestBodyForDelete("test-route.private", "1"))));
+  }
 
-    @Test
-    void testDiscoveryClientServiceDeployWithEmptyLog() throws JsonProcessingException {
-        ComponentAction componentAction = createComponentAction();
-        componentAction.setBaseConfig(Map.of("discovery", Map.of()));
+  @Test
+  void testDiscoveryClientServiceDeployWithEmptyLog() throws JsonProcessingException {
+    ComponentAction componentAction = createComponentAction();
+    componentAction.setBaseConfig(Map.of("discovery", Map.of()));
 
-        // Act
-        this.discoveryClientService.handleDiscovery(
-                1,
-                componentAction,
-                """
+    // Act
+    this.discoveryClientService.handleDiscovery(
+        1,
+        componentAction,
+        """
                         ------ODIN-DISCOVERY-MARKER-START------
                         {}
                         ------ODIN-DISCOVERY-MARKER-END------
                         """,
-                DEPLOY_ACTION_NAME);
+        DEPLOY_ACTION_NAME);
 
-        // Assert
-        verify(
-                0,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(
-                                        createDiscoveryRequestBodyForUpsert("test-route.private", "test-value", "1"))));
-    }
+    // Assert
+    verify(
+        0,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(
+                    createDiscoveryRequestBodyForUpsert("test-route.private", "test-value", "1"))));
+  }
 
-    @Test
-    void testDiscoveryClientServiceUndeployWithEmptyLog() throws JsonProcessingException {
-        // Arrange
-        ComponentAction componentAction = createComponentAction();
-        componentAction.setBaseConfig(Map.of());
+  @Test
+  void testDiscoveryClientServiceUndeployWithEmptyLog() throws JsonProcessingException {
+    // Arrange
+    ComponentAction componentAction = createComponentAction();
+    componentAction.setBaseConfig(Map.of());
 
-        // Act
-        this.discoveryClientService.handleDiscovery(
-                1,
-                componentAction,
-                """
+    // Act
+    this.discoveryClientService.handleDiscovery(
+        1,
+        componentAction,
+        """
                         ------ODIN-DISCOVERY-MARKER-START------
                         {}
                         ------ODIN-DISCOVERY-MARKER-END------
                         """,
-                UNDEPLOY_ACTION_NAME);
+        UNDEPLOY_ACTION_NAME);
 
-        // Assert
-        verify(
-                0,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(createDiscoveryRequestBodyForDelete("test-route.private", "1"))));
-    }
+    // Assert
+    verify(
+        0,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(createDiscoveryRequestBodyForDelete("test-route.private", "1"))));
+  }
 
-    @Test
-    void testDiscoveryClientServiceCnameNotFoundCase() throws JsonProcessingException {
-        // Arrange
-        ComponentAction componentAction = createComponentAction();
-        componentAction.setBaseConfig(Map.of());
+  @Test
+  void testDiscoveryClientServiceCnameNotFoundCase() throws JsonProcessingException {
+    // Arrange
+    ComponentAction componentAction = createComponentAction();
+    componentAction.setBaseConfig(Map.of());
 
-        // Act
-        this.discoveryClientService.handleDiscovery(
-                1,
-                componentAction,
-                """
+    // Act
+    this.discoveryClientService.handleDiscovery(
+        1,
+        componentAction,
+        """
                         ------ODIN-DISCOVERY-MARKER-START------
                         192.168.1.1
                         ------ODIN-DISCOVERY-MARKER-END------
                         """,
-                UNDEPLOY_ACTION_NAME);
+        UNDEPLOY_ACTION_NAME);
 
-        // Assert
-        verify(
-                0,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(createDiscoveryRequestBodyForDelete("test-route.private", "1"))));
-    }
+    // Assert
+    verify(
+        0,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(createDiscoveryRequestBodyForDelete("test-route.private", "1"))));
+  }
 
-    @Test
-    void testDiscoveryClientServiceGetBaseConfig() throws JsonProcessingException {
-        // Arrange
-        ComponentAction componentAction = createComponentAction();
-        componentAction.setBaseConfig(Map.of("discovery", "test"));
+  @Test
+  void testDiscoveryClientServiceGetBaseConfig() throws JsonProcessingException {
+    // Arrange
+    ComponentAction componentAction = createComponentAction();
+    componentAction.setBaseConfig(Map.of("discovery", "test"));
 
-        // Act
-        this.discoveryClientService.handleDiscovery(
-                1,
-                componentAction,
-                """
+    // Act
+    this.discoveryClientService.handleDiscovery(
+        1,
+        componentAction,
+        """
                         ------ODIN-DISCOVERY-MARKER-START------
                         {"discovery": "test"}
                         ------ODIN-DISCOVERY-MARKER-END------
                         """,
-                UNDEPLOY_ACTION_NAME);
+        UNDEPLOY_ACTION_NAME);
 
-        assertEquals("{discovery=test}", componentAction.getBaseConfig().toString());
-    }
+    assertEquals("{discovery=test}", componentAction.getBaseConfig().toString());
+  }
 
-    @Test
-    void testDiscoveryClientServiceUndeployMultipleKeys() throws JsonProcessingException {
-        // Arrange
-        ComponentAction componentAction = createComponentAction();
-        componentAction.setBaseConfig(
-                Map.of(
-                        "discovery", Map.of("private", "test-route.private", "public", "test-route.public")));
+  @Test
+  void testDiscoveryClientServiceUndeployMultipleKeys() throws JsonProcessingException {
+    // Arrange
+    ComponentAction componentAction = createComponentAction();
+    componentAction.setBaseConfig(
+        Map.of(
+            "discovery", Map.of("private", "test-route.private", "public", "test-route.public")));
 
-        // Act
-        this.discoveryClientService.handleDiscovery(
-                1,
-                componentAction,
-                """
+    // Act
+    this.discoveryClientService.handleDiscovery(
+        1,
+        componentAction,
+        """
                         ------ODIN-DISCOVERY-MARKER-START------
                         {"private":"test-value" , "public":"test-public-value"}
                         ------ODIN-DISCOVERY-MARKER-END------
                         """,
-                UNDEPLOY_ACTION_NAME);
+        UNDEPLOY_ACTION_NAME);
 
-        // Assert
-        verify(
-                1,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(createDiscoveryRequestBodyForDelete("test-route.private", "1"))));
+    // Assert
+    verify(
+        1,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(createDiscoveryRequestBodyForDelete("test-route.private", "1"))));
 
-        verify(
-                1,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(createDiscoveryRequestBodyForDelete("test-route.public", "1"))));
-    }
+    verify(
+        1,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(createDiscoveryRequestBodyForDelete("test-route.public", "1"))));
+  }
 
-    @Test
-    void testDiscoveryClientServiceError() {
-        // Arrange
-        stubFor(
-                put(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(400)
-                                        .withBody(
-                                                "{\"responseList\":[{\"status\":\"FAILED\",\"message\":\"Record not present\",\"id\":\"1\"}]}")));
+  @Test
+  void testDiscoveryClientServiceError() {
+    // Arrange
+    stubFor(
+        put(urlEqualTo(DISCOVERY_ENDPOINT))
+            .willReturn(
+                aResponse()
+                    .withStatus(400)
+                    .withBody(
+                        "{\"responseList\":[{\"status\":\"FAILED\",\"message\":\"Record not present\",\"id\":\"1\"}]}")));
 
-        ComponentAction componentAction = createComponentAction();
-        componentAction.setBaseConfig(Map.of("discovery", Map.of("private", "test-route.private")));
-        OrchestratorException exception = assertThrows(
-                OrchestratorException.class,
-                () -> {
-                    discoveryClientService.handleDiscovery(
-                            1,
-                            componentAction,
-                            """
+    ComponentAction componentAction = createComponentAction();
+    componentAction.setBaseConfig(Map.of("discovery", Map.of("private", "test-route.private")));
+    OrchestratorException exception =
+        assertThrows(
+            OrchestratorException.class,
+            () -> {
+              discoveryClientService.handleDiscovery(
+                  1,
+                  componentAction,
+                  """
                                     ------ODIN-DISCOVERY-MARKER-START------
                                     {"private":"test-value"}
                                     ------ODIN-DISCOVERY-MARKER-END------
                                     """,
-                            DEPLOY_ACTION_NAME);
-                });
+                  DEPLOY_ACTION_NAME);
+            });
 
-        assertThat(
-                DISCOVERY_SERVICE_ERROR.getErrorMessage().replace("%s", "")
-                        + "service returned status code: 400 response: "
-                        + "{\"responseList\":[{\"status\":\"FAILED\",\"message\":\"Record not present\",\"id\":\"1\"}]}")
-                .isEqualTo(exception.getMessage());
-    }
+    assertThat(
+            DISCOVERY_SERVICE_ERROR.getErrorMessage().replace("%s", "")
+                + "service returned status code: 400 response: "
+                + "{\"responseList\":[{\"status\":\"FAILED\",\"message\":\"Record not present\",\"id\":\"1\"}]}")
+        .isEqualTo(exception.getMessage());
+  }
 
-    @Test
-    void testDiscoveryClientResponseError() {
-        // Arrange
-        stubFor(
-            put(urlEqualTo(DISCOVERY_ENDPOINT))
-                .willReturn(
-                    aResponse()
-                        .withStatus(200)
-                        .withBody(
-                            """
+  @Test
+  void testDiscoveryClientResponseError() {
+    // Arrange
+    stubFor(
+        put(urlEqualTo(DISCOVERY_ENDPOINT))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withBody(
+                        """
                               {
                                 "responseList": {
                                     "status": "FAILED",
@@ -378,154 +378,171 @@ class DiscoveryClientServiceIT {
                               }
                             """)));
 
-        ComponentAction componentAction = createComponentAction();
-        componentAction.setBaseConfig(Map.of("discovery", Map.of("private", "test-route.private")));
-        OrchestratorException exception = assertThrows(
-                OrchestratorException.class,
-                () -> {
-                    discoveryClientService.handleDiscovery(
-                            1,
-                            componentAction,
-                            """
+    ComponentAction componentAction = createComponentAction();
+    componentAction.setBaseConfig(Map.of("discovery", Map.of("private", "test-route.private")));
+    OrchestratorException exception =
+        assertThrows(
+            OrchestratorException.class,
+            () -> {
+              discoveryClientService.handleDiscovery(
+                  1,
+                  componentAction,
+                  """
                                     ------ODIN-DISCOVERY-MARKER-START------
                                     {"private":"test-value"}
                                     ------ODIN-DISCOVERY-MARKER-END------
                                     """,
-                            DEPLOY_ACTION_NAME);
-                });
+                  DEPLOY_ACTION_NAME);
+            });
 
-        assertThat(exception.getMessage()).contains("Unexpected close marker ']': expected '}'");
-    }
+    assertThat(exception.getMessage()).contains("Unexpected close marker ']': expected '}'");
+  }
 
-    @Test
-    void testDiscoveryClientServiceUndeployWithMultipleRoutes() throws JsonProcessingException {
-        // Arrange
-        ComponentAction componentAction = createComponentAction();
-        componentAction.setBaseConfig(
-                Map.of(
-                        "discovery",
-                        Map.of(
-                                "private",
-                                List.of("test-route1.private", "test-route2.private", "test-route3.private"))));
+  @Test
+  void testDiscoveryClientServiceUndeployWithMultipleRoutes() throws JsonProcessingException {
+    // Arrange
+    ComponentAction componentAction = createComponentAction();
+    componentAction.setBaseConfig(
+        Map.of(
+            "discovery",
+            Map.of(
+                "private",
+                List.of("test-route1.private", "test-route2.private", "test-route3.private"))));
 
-        // Act
-        this.discoveryClientService.handleDiscovery(
-                1,
-                componentAction,
-                """
+    // Act
+    this.discoveryClientService.handleDiscovery(
+        1,
+        componentAction,
+        """
                         ------ODIN-DISCOVERY-MARKER-START------
                         {"private":"test-value"}
                         ------ODIN-DISCOVERY-MARKER-END------
                         """,
-                UNDEPLOY_ACTION_NAME);
+        UNDEPLOY_ACTION_NAME);
 
-        // Assert
-        verify(
-                1,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(createDiscoveryRequestBodyForDelete("test-route1.private", "1"))));
+    // Assert
+    verify(
+        1,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(createDiscoveryRequestBodyForDelete("test-route1.private", "1"))));
 
-        verify(
-                1,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(createDiscoveryRequestBodyForDelete("test-route2.private", "2"))));
+    verify(
+        1,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(createDiscoveryRequestBodyForDelete("test-route2.private", "2"))));
 
-        verify(
-                1,
-                putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
-                        .withRequestBody(
-                                equalToJson(createDiscoveryRequestBodyForDelete("test-route3.private", "3"))));
-    }
+    verify(
+        1,
+        putRequestedFor(urlEqualTo(DISCOVERY_ENDPOINT))
+            .withRequestBody(
+                equalToJson(createDiscoveryRequestBodyForDelete("test-route3.private", "3"))));
+  }
 
-    public HttpClient getHttpClient() {
-        return HttpClients.createMinimal();
-    }
+  public HttpClient getHttpClient() {
+    return HttpClients.createMinimal();
+  }
 
-    ComponentAction createComponentAction() {
-        ComponentAction componentAction = new ComponentAction();
-        AccountDto accountDto = new AccountDto();
-        Account account = new Account();
-        account.setName("staging");
-        accountDto.setAccount(account);
-        componentAction.setAccounts(accountDto);
-        return componentAction;
-    }
+  ComponentAction createComponentAction() {
+    ComponentAction componentAction = new ComponentAction();
+    AccountDto accountDto = new AccountDto();
+    Account account = new Account();
+    account.setName("staging");
+    accountDto.setAccount(account);
+    componentAction.setAccounts(accountDto);
+    return componentAction;
+  }
 
-    String createDiscoveryRequestBodyForUpsert(String key, String value, String id) {
-        return new JSONObject()
-                .put("accountName", "staging")
-                .put("recordActions",
-                        new JSONArray().put(
-                                new JSONObject()
-                                        .put("action", "UPSERT")
-                                        .put("id", id)
-                                        .put("record",
-                                                new JSONObject()
-                                                        .put("name", key)
-                                                        .put("values", new JSONArray().put(value)))))
-                .toString();
-    }
+  String createDiscoveryRequestBodyForUpsert(String key, String value, String id) {
+    return new JSONObject()
+        .put("accountName", "staging")
+        .put(
+            "recordActions",
+            new JSONArray()
+                .put(
+                    new JSONObject()
+                        .put("action", "UPSERT")
+                        .put("id", id)
+                        .put(
+                            "record",
+                            new JSONObject()
+                                .put("name", key)
+                                .put("values", new JSONArray().put(value)))))
+        .toString();
+  }
 
-    String createDiscoveryRequestBodyForDelete(String key, String id) {
-        return new JSONObject()
-                .put("accountName", "staging")
-                .put("recordActions", new JSONArray().put(
-                        new JSONObject()
-                                .put("action", "DELETE")
-                                .put("id", id)
-                                .put("record", new JSONObject().put("name", key))))
-                .toString();
-    }
+  String createDiscoveryRequestBodyForDelete(String key, String id) {
+    return new JSONObject()
+        .put("accountName", "staging")
+        .put(
+            "recordActions",
+            new JSONArray()
+                .put(
+                    new JSONObject()
+                        .put("action", "DELETE")
+                        .put("id", id)
+                        .put("record", new JSONObject().put("name", key))))
+        .toString();
+  }
 
+  @Test
+  void testDoesDNSResolveCorrectlyFalseCase() throws JsonProcessingException {
 
-    @Test
-    void testDoesDNSResolveCorrectlyFalseCase() throws JsonProcessingException {
+    String userDataJson = "{\"discovery\":{\"public\":\"demo\",\"private\":\"demo\"}}";
+    String runnerDataJson = "{\"discovery\":{\"public\":\"test\",\"private\":\"test\"}}";
 
-        String userDataJson = "{\"discovery\":{\"public\":\"demo\",\"private\":\"demo\"}}";
-        String runnerDataJson = "{\"discovery\":{\"public\":\"test\",\"private\":\"test\"}}";
+    JsonNode userDataDiscoveryNode = AppContext.getObjectMapper().readTree(userDataJson);
+    JsonNode runnerDiscoveryOutputNode = AppContext.getObjectMapper().readTree(runnerDataJson);
 
-        JsonNode userDataDiscoveryNode = AppContext.getObjectMapper().readTree(userDataJson);
-        JsonNode runnerDiscoveryOutputNode = AppContext.getObjectMapper().readTree(runnerDataJson);
+    assertThat(
+            this.discoveryClientService.doesDNSResolveCorrectly(
+                runnerDiscoveryOutputNode, userDataDiscoveryNode))
+        .isFalse();
+  }
 
-        assertThat(this.discoveryClientService.doesDNSResolveCorrectly(runnerDiscoveryOutputNode, userDataDiscoveryNode)).isFalse();
-    }
+  @Test
+  void testDoesDNSResolveCorrectlyTrueCase() throws JsonProcessingException {
 
-    @Test
-    void testDoesDNSResolveCorrectlyTrueCase() throws JsonProcessingException {
+    String userDataJson =
+        "{\"discovery\":{\"public\":\"example.com\",\"private\":\"example.local\"}}";
+    String runnerDataJson =
+        "{\"discovery\":{\"public\":\"example.com\",\"private\":\"example.local\"}}";
 
-        String userDataJson = "{\"discovery\":{\"public\":\"example.com\",\"private\":\"example.local\"}}";
-        String runnerDataJson = "{\"discovery\":{\"public\":\"example.com\",\"private\":\"example.local\"}}";
+    JsonNode userDataDiscoveryNode = AppContext.getObjectMapper().readTree(userDataJson);
+    JsonNode runnerDiscoveryOutputNode = AppContext.getObjectMapper().readTree(runnerDataJson);
 
-        JsonNode userDataDiscoveryNode = AppContext.getObjectMapper().readTree(userDataJson);
-        JsonNode runnerDiscoveryOutputNode = AppContext.getObjectMapper().readTree(runnerDataJson);
+    assertThat(
+            this.discoveryClientService.doesDNSResolveCorrectly(
+                runnerDiscoveryOutputNode, userDataDiscoveryNode))
+        .isTrue();
+  }
 
-        assertThat(this.discoveryClientService.doesDNSResolveCorrectly(runnerDiscoveryOutputNode, userDataDiscoveryNode)).isTrue();
-    }
+  @Test
+  void testDoesDNSResolveCorrectlyWithEmptyJson() throws JsonProcessingException {
 
-    @Test
-    void testDoesDNSResolveCorrectlyWithEmptyJson() throws JsonProcessingException {
+    String userDataJson = "{}";
+    String runnerDataJson = "{}";
 
-        String userDataJson = "{}";
-        String runnerDataJson = "{}";
+    JsonNode userDataDiscoveryNode = AppContext.getObjectMapper().readTree(userDataJson);
+    JsonNode runnerDiscoveryOutputNode = AppContext.getObjectMapper().readTree(runnerDataJson);
 
-        JsonNode userDataDiscoveryNode = AppContext.getObjectMapper().readTree(userDataJson);
-        JsonNode runnerDiscoveryOutputNode = AppContext.getObjectMapper().readTree(runnerDataJson);
+    assertThat(
+            this.discoveryClientService.doesDNSResolveCorrectly(
+                runnerDiscoveryOutputNode, userDataDiscoveryNode))
+        .isTrue();
+  }
 
-        assertThat(this.discoveryClientService.doesDNSResolveCorrectly(runnerDiscoveryOutputNode, userDataDiscoveryNode)).isTrue();
-    }
+  @Test
+  void testDoesDNSResolveCorrectlyWithNullUserDataJson() throws JsonProcessingException {
 
-    @Test
-    void testDoesDNSResolveCorrectlyWithNullUserDataJson() throws JsonProcessingException {
+    String runnerDataJson = "{}";
 
-        String runnerDataJson = "{}";
+    JsonNode runnerDiscoveryOutputNode = AppContext.getObjectMapper().readTree(runnerDataJson);
 
-        JsonNode runnerDiscoveryOutputNode = AppContext.getObjectMapper().readTree(runnerDataJson);
-
-        assertThrows(
-                OrchestratorException.class,
-                ()->this.discoveryClientService.doesDNSResolveCorrectly(null, runnerDiscoveryOutputNode),
-                "Should have thrown OrchestratorException");
-    }
+    assertThrows(
+        OrchestratorException.class,
+        () -> this.discoveryClientService.doesDNSResolveCorrectly(null, runnerDiscoveryOutputNode),
+        "Should have thrown OrchestratorException");
+  }
 }

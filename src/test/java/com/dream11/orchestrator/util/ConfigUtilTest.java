@@ -1,20 +1,19 @@
 package com.dream11.orchestrator.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.dream11.orchestrator.config.AppConfig;
-
 import com.dream11.queue.QueueProvider;
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigList;
 import com.typesafe.config.ConfigValueType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 class ConfigUtilTest {
 
@@ -31,7 +30,6 @@ class ConfigUtilTest {
     assertThat(config).isNotNull();
     assertThat(config.getQueue().getRequest().getProvider()).isEqualTo(QueueProvider.SQS);
     assertThat(config.getRunner().getDind().getEnabled()).isTrue();
-    // TODO add assertions
   }
 
   @Test
@@ -45,41 +43,42 @@ class ConfigUtilTest {
     assertThat(config).isNotNull();
     assertThat(config.getRunner().getDind().getEnabled()).isFalse();
   }
-    @SneakyThrows
-    private static Method parseArrayConfigMethod() {
-        Method m = ConfigUtil.class.getDeclaredMethod("parseArrayConfig", Config.class, String.class);
-        m.setAccessible(true);
-        return m;
-    }
 
-    @SneakyThrows
-    private static Config invokeParseArray(Config cfg, String path) {
-        return (Config) parseArrayConfigMethod().invoke(null, cfg, path);
-    }
+  @SneakyThrows
+  private static Method parseArrayConfigMethod() {
+    Method m = ConfigUtil.class.getDeclaredMethod("parseArrayConfig", Config.class, String.class);
+    m.setAccessible(true);
+    return m;
+  }
 
-    @Test
-    void testParseArrayConfigParsesStringArrayToList() {
-        String path = "runner.hostVolumeMounts";
-        Config input =
-            ConfigFactory.parseString(
-                "runner.hostVolumeMounts = \"[\\\"/h1:/c1:ro\\\", \\\"/h2:/c2:rw\\\"]\"");
+  @SneakyThrows
+  private static Config invokeParseArray(Config cfg, String path) {
+    return (Config) parseArrayConfigMethod().invoke(null, cfg, path);
+  }
 
-        assertThrows(
-            InvocationTargetException.class,
-            () -> invokeParseArray(input, ""),
-            "Should have thrown InvocationTargetException");
+  @Test
+  void testParseArrayConfigParsesStringArrayToList() {
+    String path = "runner.hostVolumeMounts";
+    Config input =
+        ConfigFactory.parseString(
+            "runner.hostVolumeMounts = \"[\\\"/h1:/c1:ro\\\", \\\"/h2:/c2:rw\\\"]\"");
 
-        Config result = invokeParseArray(input, path);
+    assertThrows(
+        InvocationTargetException.class,
+        () -> invokeParseArray(input, ""),
+        "Should have thrown InvocationTargetException");
 
-        assertTrue(result.hasPath(path), "Result config should have the converted path");
-        assertEquals(ConfigValueType.LIST, result.getValue(path).valueType(), "Expected a LIST value");
+    Config result = invokeParseArray(input, path);
 
-        ConfigList list = result.getList(path);
-        assertEquals(2, list.size());
-        assertEquals("/h1:/c1:ro", result.getStringList(path).get(0));
-        assertEquals("/h2:/c2:rw", result.getStringList(path).get(1));
+    assertTrue(result.hasPath(path), "Result config should have the converted path");
+    assertEquals(ConfigValueType.LIST, result.getValue(path).valueType(), "Expected a LIST value");
 
-        Config merged = result.withFallback(input);
-        assertEquals(ConfigValueType.LIST, merged.getValue(path).valueType());
-    }
+    ConfigList list = result.getList(path);
+    assertEquals(2, list.size());
+    assertEquals("/h1:/c1:ro", result.getStringList(path).get(0));
+    assertEquals("/h2:/c2:rw", result.getStringList(path).get(1));
+
+    Config merged = result.withFallback(input);
+    assertEquals(ConfigValueType.LIST, merged.getValue(path).valueType());
+  }
 }
