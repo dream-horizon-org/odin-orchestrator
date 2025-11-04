@@ -44,6 +44,7 @@ public class Orchestrator {
         ResponseMessage responseMessage =
             ResponseMessage.builder()
                 .id(requestMessage.getId())
+                .executionId(requestMessage.getTraceId())
                 .type(ResponseMessageType.NAMESPACE)
                 .status(TaskStatus.FAILED)
                 .error(e.getMessage())
@@ -60,6 +61,7 @@ public class Orchestrator {
                   ResponseMessage componentResponseMessage =
                       ResponseMessage.builder()
                           .id(requestMessage.getId())
+                          .executionId(requestMessage.getTraceId())
                           .type(ResponseMessageType.COMPONENT_STATUS)
                           .status(TaskStatus.FAILED)
                           .error(e.getMessage())
@@ -77,6 +79,7 @@ public class Orchestrator {
             ResponseMessage.builder()
                 .id(requestMessage.getId())
                 .type(ResponseMessageType.SERVICE_STATUS)
+                .executionId(requestMessage.getTraceId())
                 .status(TaskStatus.FAILED)
                 .error(e.getMessage())
                 .build();

@@ -30,6 +30,7 @@ public class NamespaceMessageProcessor implements MessageProcessor {
     ResponseMessage.ResponseMessageBuilder responseMessageBuilder =
         ResponseMessage.builder()
             .id(requestMessage.getId())
+            .executionId(requestMessage.getTraceId())
             .type(ResponseMessageType.NAMESPACE)
             .status(TaskStatus.SUCCESSFUL)
             .error(StringUtils.EMPTY);

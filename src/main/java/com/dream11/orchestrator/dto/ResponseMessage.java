@@ -12,6 +12,8 @@ import lombok.Data;
 public class ResponseMessage {
   String error;
 
+  String executionId;
+
   Long id;
 
   TaskStatus status;
