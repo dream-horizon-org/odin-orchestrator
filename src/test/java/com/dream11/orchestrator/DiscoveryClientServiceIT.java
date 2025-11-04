@@ -4,10 +4,15 @@ import static com.dream11.orchestrator.constants.Constants.DEPLOY_ACTION_NAME;
 import static com.dream11.orchestrator.constants.Constants.UNDEPLOY_ACTION_NAME;
 import static com.dream11.orchestrator.exception.OrchestratorExceptionType.DISCOVERY_SERVICE_ERROR;
 import static com.dream11.orchestrator.service.DiscoveryClientService.DISCOVERY_ENDPOINT;
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.put;
+import static com.github.tomakehurst.wiremock.client.WireMock.putRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dream11.orchestrator.config.AppConfig;
 import com.dream11.orchestrator.dto.account.Account;
@@ -287,7 +292,7 @@ class DiscoveryClientServiceIT {
                         """,
         UNDEPLOY_ACTION_NAME);
 
-    assertEquals("{discovery=test}", componentAction.getBaseConfig().toString());
+    assertThat("{discovery=test}").isEqualTo(componentAction.getBaseConfig().toString());
   }
 
   @Test
@@ -336,26 +341,23 @@ class DiscoveryClientServiceIT {
 
     ComponentAction componentAction = createComponentAction();
     componentAction.setBaseConfig(Map.of("discovery", Map.of("private", "test-route.private")));
-    OrchestratorException exception =
-        assertThrows(
-            OrchestratorException.class,
-            () -> {
-              discoveryClientService.handleDiscovery(
-                  1,
-                  componentAction,
-                  """
+
+    assertThatThrownBy(
+            () ->
+                discoveryClientService.handleDiscovery(
+                    1,
+                    componentAction,
+                    """
                                     ------ODIN-DISCOVERY-MARKER-START------
                                     {"private":"test-value"}
                                     ------ODIN-DISCOVERY-MARKER-END------
                                     """,
-                  DEPLOY_ACTION_NAME);
-            });
-
-    assertThat(
+                    DEPLOY_ACTION_NAME))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining(
             DISCOVERY_SERVICE_ERROR.getErrorMessage().replace("%s", "")
                 + "service returned status code: 400 response: "
-                + "{\"responseList\":[{\"status\":\"FAILED\",\"message\":\"Record not present\",\"id\":\"1\"}]}")
-        .isEqualTo(exception.getMessage());
+                + "{\"responseList\":[{\"status\":\"FAILED\",\"message\":\"Record not present\",\"id\":\"1\"}]}");
   }
 
   @Test
@@ -380,22 +382,19 @@ class DiscoveryClientServiceIT {
 
     ComponentAction componentAction = createComponentAction();
     componentAction.setBaseConfig(Map.of("discovery", Map.of("private", "test-route.private")));
-    OrchestratorException exception =
-        assertThrows(
-            OrchestratorException.class,
-            () -> {
-              discoveryClientService.handleDiscovery(
-                  1,
-                  componentAction,
-                  """
+    assertThatThrownBy(
+            () ->
+                discoveryClientService.handleDiscovery(
+                    1,
+                    componentAction,
+                    """
                                     ------ODIN-DISCOVERY-MARKER-START------
                                     {"private":"test-value"}
                                     ------ODIN-DISCOVERY-MARKER-END------
                                     """,
-                  DEPLOY_ACTION_NAME);
-            });
-
-    assertThat(exception.getMessage()).contains("Unexpected close marker ']': expected '}'");
+                    DEPLOY_ACTION_NAME))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining("Unexpected close marker ']': expected '}'");
   }
 
   @Test
@@ -540,9 +539,11 @@ class DiscoveryClientServiceIT {
 
     JsonNode runnerDiscoveryOutputNode = AppContext.getObjectMapper().readTree(runnerDataJson);
 
-    assertThrows(
-        OrchestratorException.class,
-        () -> this.discoveryClientService.doesDNSResolveCorrectly(null, runnerDiscoveryOutputNode),
-        "Should have thrown OrchestratorException");
+    assertThatThrownBy(
+            () ->
+                this.discoveryClientService.doesDNSResolveCorrectly(
+                    null, runnerDiscoveryOutputNode))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining("Json structure of nodes node1[null] and node2[{}] does not match.");
   }
 }

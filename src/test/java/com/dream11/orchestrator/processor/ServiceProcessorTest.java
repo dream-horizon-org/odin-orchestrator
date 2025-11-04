@@ -1,6 +1,6 @@
 package com.dream11.orchestrator.processor;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -79,9 +79,9 @@ class ServiceProcessorTest {
   @Test
   void testProcessWithNullRequestMessage() {
 
-    assertThrows(
-        NullPointerException.class,
-        () -> this.serviceMessageProcessor.process(this.nullRequestMessage),
-        "Should have thrown NullPointerException");
+    assertThatThrownBy(() -> this.serviceMessageProcessor.process(this.nullRequestMessage))
+        .isInstanceOf(NullPointerException.class)
+        .hasMessageContaining(
+            "Cannot invoke \"com.dream11.orchestrator.dto.request.ServiceRequestMessageBody.getEnvironmentName()\" because \"serviceRequestMessageBody\" is null");
   }
 }

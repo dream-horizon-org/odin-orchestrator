@@ -1,7 +1,7 @@
 package com.dream11.orchestrator.provisioner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dream11.orchestrator.config.AppConfig;
 import com.dream11.orchestrator.exception.OrchestratorException;
@@ -22,7 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class KubernetesRunnerProvisionerTest {
+class KubernetesRunnerProvisionerTest {
 
   final String namespace = "namespace-0";
   static final String KUBECONFIG_PATH = "kubeconfig.yaml";
@@ -37,7 +37,7 @@ public class KubernetesRunnerProvisionerTest {
 
   @BeforeEach
   void setUp() {
-    createKubeconfig();
+    if (!new File(KUBECONFIG_PATH).exists()) createKubeconfig();
     k8sClient = TestUtil.createKubernetesClient(KUBECONFIG_PATH);
     kubernetesRunnerProvisioner = new KubernetesRunnerProvisioner(k8sClient, appConfig);
     if (!this.kubernetesRunnerProvisioner.namespaceExists(namespace))
@@ -52,9 +52,12 @@ public class KubernetesRunnerProvisionerTest {
 
   @Test
   void testWaitForNamespaceReadinessWithWrongNamespace() {
-    assertThrows(
-        OrchestratorException.class,
-        () -> this.kubernetesRunnerProvisioner.waitForNamespaceReadiness("wrong-namespace-0", 2));
+    assertThatThrownBy(
+            () ->
+                this.kubernetesRunnerProvisioner.waitForNamespaceReadiness("wrong-namespace-0", 2))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining(
+            "Namespace creation failed for wrong-namespace-0 with error Namespace did not reach Active phase within timeout");
   }
 
   @Test
@@ -62,9 +65,11 @@ public class KubernetesRunnerProvisionerTest {
 
     Namespace nsObj = k8sClient.namespaces().withName(namespace).get();
     nsObj.setStatus(null);
-    assertThrows(
-        OrchestratorException.class,
-        () -> this.kubernetesRunnerProvisioner.waitForNamespaceReadiness(this.namespace, 2));
+    assertThatThrownBy(
+            () -> this.kubernetesRunnerProvisioner.waitForNamespaceReadiness(this.namespace, 2))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining(
+            "Namespace creation failed for namespace-0 with error Namespace did not reach Active phase within timeout");
   }
 
   @Test
@@ -75,12 +80,12 @@ public class KubernetesRunnerProvisionerTest {
     String long_filtered_log = this.kubernetesRunnerProvisioner.filterErrorLines(long_log);
     String short_filtered_log = this.kubernetesRunnerProvisioner.filterErrorLines(short_log);
 
-    assertEquals(long_filtered_log, short_filtered_log + "\n...\n" + short_filtered_log);
+    assertThat(long_filtered_log).isEqualTo(short_filtered_log + "\n...\n" + short_filtered_log);
   }
 
   @Test
   void testNamespaceExists() {
-    assertTrue(this.kubernetesRunnerProvisioner.namespaceExists(namespace));
+    assertThat(this.kubernetesRunnerProvisioner.namespaceExists(namespace)).isTrue();
   }
 
   @Test

@@ -2,8 +2,6 @@ package com.dream11.orchestrator.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.dream11.orchestrator.exception.OrchestratorException;
 import com.dream11.orchestrator.inject.AppContext;
@@ -29,7 +27,7 @@ class DiscoveryClientServiceTest {
 
     String result = discoveryClientService.getDiscoveryOutputFromLogs(logs);
 
-    assertEquals("{\"key\":\"value\"}", result);
+    assertThat("{\"key\":\"value\"}").isEqualTo(result);
   }
 
   @Test
@@ -57,7 +55,7 @@ class DiscoveryClientServiceTest {
     String result =
         discoveryClientService.getContentBetweenMarkers(rawContent, startMarker, endMarker);
 
-    assertEquals(content, result);
+    assertThat(content).isEqualTo(result);
   }
 
   @Test
@@ -66,7 +64,7 @@ class DiscoveryClientServiceTest {
 
     boolean result = discoveryClientService.containsCnameRecords(discoveryOutput);
 
-    assertTrue(result);
+    assertThat(result).isTrue();
   }
 
   @Test
@@ -75,7 +73,7 @@ class DiscoveryClientServiceTest {
 
     boolean result = discoveryClientService.containsCnameRecords(discoveryOutput);
 
-    assertFalse(result);
+    assertThat(result).isFalse();
   }
 
   @Test
@@ -84,7 +82,7 @@ class DiscoveryClientServiceTest {
 
     boolean result = discoveryClientService.containsCnameRecords(discoveryOutput);
 
-    assertFalse(result);
+    assertThat(result).isFalse();
   }
 
   @Test
@@ -108,9 +106,9 @@ class DiscoveryClientServiceTest {
     String validIp2 = "0.0.0.0";
     String validIp3 = "255.255.255.255";
 
-    assertTrue(discoveryClientService.isIpAddress(validIp1));
-    assertTrue(discoveryClientService.isIpAddress(validIp2));
-    assertTrue(discoveryClientService.isIpAddress(validIp3));
+    assertThat(discoveryClientService.isIpAddress(validIp1)).isTrue();
+    assertThat(discoveryClientService.isIpAddress(validIp2)).isTrue();
+    assertThat(discoveryClientService.isIpAddress(validIp3)).isTrue();
   }
 
   @Test
@@ -122,12 +120,12 @@ class DiscoveryClientServiceTest {
     String invalidIp5 = "192.168.1.256";
     String invalidIp6 = "300.300.300.300";
 
-    assertFalse(discoveryClientService.isIpAddress(invalidIp1));
-    assertFalse(discoveryClientService.isIpAddress(invalidIp2));
-    assertFalse(discoveryClientService.isIpAddress(invalidIp3));
-    assertFalse(discoveryClientService.isIpAddress(invalidIp4));
-    assertFalse(discoveryClientService.isIpAddress(invalidIp5));
-    assertFalse(discoveryClientService.isIpAddress(invalidIp6));
+    assertThat(discoveryClientService.isIpAddress(invalidIp1)).isFalse();
+    assertThat(discoveryClientService.isIpAddress(invalidIp2)).isFalse();
+    assertThat(discoveryClientService.isIpAddress(invalidIp3)).isFalse();
+    assertThat(discoveryClientService.isIpAddress(invalidIp4)).isFalse();
+    assertThat(discoveryClientService.isIpAddress(invalidIp5)).isFalse();
+    assertThat(discoveryClientService.isIpAddress(invalidIp6)).isFalse();
   }
 
   @Test
@@ -137,10 +135,10 @@ class DiscoveryClientServiceTest {
     String whitespaceString = "   ";
     String nonIpString = "not.an.ip.address";
 
-    assertFalse(discoveryClientService.isIpAddress(emptyString));
-    assertFalse(discoveryClientService.isIpAddress(nullString));
-    assertFalse(discoveryClientService.isIpAddress(whitespaceString));
-    assertFalse(discoveryClientService.isIpAddress(nonIpString));
+    assertThat(discoveryClientService.isIpAddress(emptyString)).isFalse();
+    assertThat(discoveryClientService.isIpAddress(nullString)).isFalse();
+    assertThat(discoveryClientService.isIpAddress(whitespaceString)).isFalse();
+    assertThat(discoveryClientService.isIpAddress(nonIpString)).isFalse();
   }
 
   @ParameterizedTest
@@ -153,7 +151,7 @@ class DiscoveryClientServiceTest {
       throws JsonProcessingException {
     String result = discoveryClientService.getDiscoveryFromUserData(userData);
 
-    assertEquals(discoveryOutput, result);
+    assertThat(discoveryOutput).isEqualTo(result);
   }
 
   @Test
@@ -233,7 +231,7 @@ class DiscoveryClientServiceTest {
 
     boolean result = discoveryClientService.containsCnameRecords(discoveryOutput);
 
-    assertFalse(result);
+    assertThat(result).isFalse();
   }
 
   @Test
@@ -242,7 +240,7 @@ class DiscoveryClientServiceTest {
 
     boolean result = discoveryClientService.containsCnameRecords(discoveryOutput);
 
-    assertTrue(result);
+    assertThat(result).isTrue();
   }
 
   @Test
@@ -251,7 +249,7 @@ class DiscoveryClientServiceTest {
 
     boolean result = discoveryClientService.containsCnameRecords(discoveryOutput);
 
-    assertFalse(result);
+    assertThat(result).isFalse();
   }
 
   @Test

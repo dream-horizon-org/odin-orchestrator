@@ -1,7 +1,8 @@
 package com.dream11.orchestrator.config;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.stream.IntStream;
@@ -40,20 +41,20 @@ class HttpClientRetryStrategyTest {
           .forEach(
               execCount -> {
                 boolean retry = strategy.retryRequest(req, new IOException("boom"), execCount, ctx);
-                assertTrue(retry, "Expected retry for execCount " + execCount);
+                assertThat(retry).isTrue();
               });
     }
 
     @Test
     void falseAfterLimit() {
       boolean retry = strategy.retryRequest(null, new IOException("boom"), retryCount + 1, null);
-      assertFalse(retry);
+      assertThat(retry).isFalse();
     }
 
     @Test
     void ignoresNulls() {
       boolean retry = strategy.retryRequest(null, null, 1, null);
-      assertTrue(retry);
+      assertThat(retry).isTrue();
     }
   }
 
@@ -73,7 +74,7 @@ class HttpClientRetryStrategyTest {
     void retryableStatusesTrueWithinLimit(int status) {
       HttpResponse resp = mockResponse(status);
       boolean retry = strategy.retryRequest(resp, retryCount, null);
-      assertTrue(retry, "Expected retry for status " + status + " at execCount == retryCount");
+      assertThat(retry).isTrue();
     }
 
     @ParameterizedTest
@@ -89,7 +90,7 @@ class HttpClientRetryStrategyTest {
     void retryableStatusesFalseAfterLimit(int status) {
       HttpResponse resp = mockResponse(status);
       boolean retry = strategy.retryRequest(resp, retryCount + 1, null);
-      assertFalse(retry, "Expected no retry for status " + status + " after limit");
+      assertThat(retry).isFalse();
     }
 
     @ParameterizedTest
@@ -97,14 +98,14 @@ class HttpClientRetryStrategyTest {
     void nonRetryableStatusesFalse(int status) {
       HttpResponse resp = mockResponse(status);
       boolean retry = strategy.retryRequest(resp, 1, null);
-      assertFalse(retry, "Expected no retry for non-retryable status " + status);
+      assertThat(retry).isFalse();
     }
   }
 
   @Test
   void retryInterval() {
     TimeValue tv = strategy.getRetryInterval(null, 1, null);
-    assertEquals(retryIntervalSecs, tv.toSeconds());
-    assertEquals(TimeValue.ofSeconds(retryIntervalSecs), tv);
+    assertThat(retryIntervalSecs).isEqualTo(tv.toSeconds());
+    assertThat(TimeValue.ofSeconds(retryIntervalSecs)).isEqualTo(tv);
   }
 }

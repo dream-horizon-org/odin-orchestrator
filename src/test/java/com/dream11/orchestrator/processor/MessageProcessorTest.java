@@ -1,7 +1,7 @@
 package com.dream11.orchestrator.processor;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dream11.orchestrator.constants.RequestMessageType;
 import com.dream11.orchestrator.inject.AppContext;
@@ -43,16 +43,16 @@ class MessageProcessorTest {
 
   @Test
   void testGetProcessorWithNullArgument() {
-    assertThrows(
-        NullPointerException.class,
-        () -> MessageProcessor.getProcessor(this.nullRequestMessageType),
-        "Should have thrown NullPointerException");
+    assertThatThrownBy(() -> MessageProcessor.getProcessor(this.nullRequestMessageType))
+        .isInstanceOf(NullPointerException.class)
+        .hasMessageContaining("messageType is marked non-null but is null");
   }
 
   @Test
   void testGetMessageProcessorWithWrongType() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> MessageProcessor.getProcessor(RequestMessageType.valueOf("WrongType")));
+    assertThatThrownBy(() -> MessageProcessor.getProcessor(RequestMessageType.valueOf("WrongType")))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining(
+            "No enum constant com.dream11.orchestrator.constants.RequestMessageType.WrongType");
   }
 }

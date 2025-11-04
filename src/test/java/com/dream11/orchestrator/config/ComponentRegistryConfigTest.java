@@ -1,6 +1,6 @@
 package com.dream11.orchestrator.config;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -8,7 +8,7 @@ import jakarta.validation.Validator;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 
-public class ComponentRegistryConfigTest {
+class ComponentRegistryConfigTest {
 
   @SuppressWarnings("resource")
   @Test
@@ -22,18 +22,18 @@ public class ComponentRegistryConfigTest {
 
     Set<ConstraintViolation<ComponentRegistryConfig>> violations =
         v.validate(componentRegistryConfig);
-    assertEquals(0, violations.size());
+    assertThat(0).isEqualTo(violations.size());
 
     componentRegistryConfig.setPassword("");
     violations = v.validate(componentRegistryConfig);
-    assertEquals(1, violations.size());
+    assertThat(1).isEqualTo(violations.size());
 
     componentRegistryConfig.setUsername("");
     violations = v.validate(componentRegistryConfig);
-    assertEquals(0, violations.size());
+    assertThat(0).isEqualTo(violations.size());
 
     componentRegistryConfig.setPassword("password");
     violations = v.validate(componentRegistryConfig);
-    assertEquals(1, violations.size());
+    assertThat(1).isEqualTo(violations.size());
   }
 }

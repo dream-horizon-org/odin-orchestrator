@@ -1,7 +1,7 @@
 package com.dream11.orchestrator.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dream11.orchestrator.exception.OrchestratorException;
 import com.dream11.orchestrator.inject.AppContext;
@@ -22,18 +22,14 @@ class JsonUtilTest {
     JsonNode node2 = OBJECT_MAPPER.readTree("{\"key1\":\"value2\"}");
     JsonNode node3 = OBJECT_MAPPER.readTree("");
     List<Pair<String, String>> pairs = JsonUtil.extractMatchingLeafNodes(node1, node2);
-    assertEquals(1, JsonUtil.extractMatchingLeafNodes(node1, node2).size());
-    assertEquals("value1", pairs.get(0).getLeft());
-    assertEquals("value2", pairs.get(0).getRight());
+    assertThat(1).isEqualTo(JsonUtil.extractMatchingLeafNodes(node1, node2).size());
+    assertThat("value1").isEqualTo(pairs.get(0).getLeft());
+    assertThat("value2").isEqualTo(pairs.get(0).getRight());
 
-    OrchestratorException thrown =
-        assertThrows(
-            OrchestratorException.class,
-            () -> JsonUtil.extractMatchingLeafNodes(node2, node3),
-            "Should have thrown OrchestratorException");
-    assertEquals(
-        "Json structure of nodes node1[{\"key1\":\"value2\"}] and node2[null] does not match.",
-        thrown.getMessage());
+    assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node2, node3))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining(
+            "Json structure of nodes node1[{\"key1\":\"value2\"}] and node2[null] does not match.");
   }
 
   @Test
@@ -45,11 +41,11 @@ class JsonUtilTest {
         OBJECT_MAPPER.readTree(
             "{\"discovery\":{\"public\":\"pqr.com\",\"private\":\"pqr.local\"}}");
     List<Pair<String, String>> pairs = JsonUtil.extractMatchingLeafNodes(node1, node2);
-    assertEquals(2, JsonUtil.extractMatchingLeafNodes(node1, node2).size());
-    assertEquals("xyz.com", pairs.get(0).getLeft());
-    assertEquals("pqr.com", pairs.get(0).getRight());
-    assertEquals("xyz.local", pairs.get(1).getLeft());
-    assertEquals("pqr.local", pairs.get(1).getRight());
+    assertThat(2).isEqualTo(JsonUtil.extractMatchingLeafNodes(node1, node2).size());
+    assertThat("xyz.com").isEqualTo(pairs.get(0).getLeft());
+    assertThat("pqr.com").isEqualTo(pairs.get(0).getRight());
+    assertThat("xyz.local").isEqualTo(pairs.get(1).getLeft());
+    assertThat("pqr.local").isEqualTo(pairs.get(1).getRight());
   }
 
   @Test
@@ -59,51 +55,35 @@ class JsonUtilTest {
             "{\"discovery\":{\"public\":\"xyz.com\",\"private\":\"xyz.local\"}}");
     JsonNode node2 = OBJECT_MAPPER.readTree("{\"discovery\":{\"noMatch\":\"pqr.com\"}}");
 
-    OrchestratorException thrown =
-        assertThrows(
-            OrchestratorException.class,
-            () -> JsonUtil.extractMatchingLeafNodes(node1, node2),
-            "Should have thrown OrchestratorException");
-    assertEquals(
-        "Json structure of nodes node1[public] and node2[] does not match.", thrown.getMessage());
+    assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node1, node2))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining("Json structure of nodes node1[public] and node2[] does not match.");
   }
 
   @Test
   void testExtractMatchingLeafNodesArrayInput() throws JsonProcessingException {
     JsonNode node1 = OBJECT_MAPPER.readTree("[\"key\"]");
 
-    assertEquals(1, JsonUtil.extractMatchingLeafNodes(node1, node1).size());
+    assertThat(1).isEqualTo(JsonUtil.extractMatchingLeafNodes(node1, node1).size());
 
     JsonNode node3 = OBJECT_MAPPER.readTree("[\"key\", \"value1\"]");
 
-    OrchestratorException thrown1 =
-        assertThrows(
-            OrchestratorException.class,
-            () -> JsonUtil.extractMatchingLeafNodes(node1, node3),
-            "Should have thrown OrchestratorException");
-    assertEquals(
-        "Json structure of nodes node1[[\"key\"]] and node2[[\"key\",\"value1\"]] does not match.",
-        thrown1.getMessage());
+    assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node1, node3))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining(
+            "Json structure of nodes node1[[\"key\"]] and node2[[\"key\",\"value1\"]] does not match.");
 
     JsonNode node4 = OBJECT_MAPPER.readTree("[\"key\", \"value2\"]");
-    OrchestratorException thrown2 =
-        assertThrows(
-            OrchestratorException.class,
-            () -> JsonUtil.extractMatchingLeafNodes(node3, node4),
-            "Should have thrown OrchestratorException");
-    assertEquals(
-        "Json structure of nodes node1[[\"key\",\"value1\"]] and node2[[\"key\",\"value2\"]] does not match.",
-        thrown2.getMessage());
+    assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node3, node4))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining(
+            "Json structure of nodes node1[[\"key\",\"value1\"]] and node2[[\"key\",\"value2\"]] does not match.");
 
     JsonNode objectNode = OBJECT_MAPPER.readTree("{\"discovery\":{\"public\":\"xyz.com\"}}");
-    OrchestratorException thrown3 =
-        assertThrows(
-            OrchestratorException.class,
-            () -> JsonUtil.extractMatchingLeafNodes(node1, objectNode),
-            "Should have thrown OrchestratorException");
-    assertEquals(
-        "Json structure of nodes node1[[\"key\"]] and node2[{\"discovery\":{\"public\":\"xyz.com\"}}] does not match.",
-        thrown3.getMessage());
+    assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node1, objectNode))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining(
+            "Json structure of nodes node1[[\"key\"]] and node2[{\"discovery\":{\"public\":\"xyz.com\"}}] does not match.");
   }
 
   @Test
@@ -112,25 +92,17 @@ class JsonUtilTest {
     JsonNode node2 = OBJECT_MAPPER.readTree("");
 
     List<Pair<String, String>> NullPairs = JsonUtil.extractMatchingLeafNodes(node1, node1);
-    assertEquals(0, NullPairs.size());
+    assertThat(0).isEqualTo(NullPairs.size());
 
-    OrchestratorException thrown1 =
-        assertThrows(
-            OrchestratorException.class,
-            () -> JsonUtil.extractMatchingLeafNodes(node1, node2),
-            "Should have thrown OrchestratorException");
-    assertEquals(
-        "Json structure of nodes node1[null] and node2[null] does not match.",
-        thrown1.getMessage());
+    assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node1, node2))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining(
+            "Json structure of nodes node1[null] and node2[null] does not match.");
 
-    OrchestratorException thrown2 =
-        assertThrows(
-            OrchestratorException.class,
-            () -> JsonUtil.extractMatchingLeafNodes(node2, node1),
-            "Should have thrown OrchestratorException");
-    assertEquals(
-        "Json structure of nodes node1[null] and node2[null] does not match.",
-        thrown2.getMessage());
+    assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node2, node1))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining(
+            "Json structure of nodes node1[null] and node2[null] does not match.");
   }
 
   @Test
@@ -138,13 +110,9 @@ class JsonUtilTest {
     JsonNode node1 = OBJECT_MAPPER.readTree("\"test\"");
     JsonNode node2 = OBJECT_MAPPER.readTree("");
 
-    OrchestratorException thrown1 =
-        assertThrows(
-            OrchestratorException.class,
-            () -> JsonUtil.extractMatchingLeafNodes(node1, node2),
-            "Should have thrown OrchestratorException");
-    assertEquals(
-        "Json structure of nodes node1[\"test\"] and node2[null] does not match.",
-        thrown1.getMessage());
+    assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node1, node2))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining(
+            "Json structure of nodes node1[\"test\"] and node2[null] does not match.");
   }
 }

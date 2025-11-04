@@ -1,7 +1,7 @@
 package com.dream11.orchestrator.graph;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dream11.orchestrator.constants.TaskStatus;
 import com.dream11.orchestrator.dto.request.RequestMessage;
@@ -95,22 +95,20 @@ class DagBuilderTest {
     ServiceRequestMessageBody serviceRequestMessageBody =
         (ServiceRequestMessageBody) requestMessage.getBody();
 
-    assertThrows(
-        IllegalStateException.class,
-        () -> dagBuilder.updateCompletedNode(1, TaskStatus.SUCCESSFUL),
-        "Should have thrown IllegalStateException");
+    assertThatThrownBy(() -> dagBuilder.updateCompletedNode(1, TaskStatus.SUCCESSFUL))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("Graph not initialized. Use init() first");
 
     this.dagBuilder.init(serviceRequestMessageBody);
 
-    assertThrows(
-        OrchestratorException.class,
-        () -> this.dagBuilder.init(null),
-        "Should have thrown OrchestratorException");
+    assertThatThrownBy(() -> this.dagBuilder.init(null))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining("Graph already initialized");
 
-    assertThrows(
-        OrchestratorException.class,
-        () -> this.dagBuilder.updateCompletedNode(componentId, TaskStatus.SUCCESSFUL),
-        "Should have thrown OrchestratorException");
+    assertThatThrownBy(
+            () -> this.dagBuilder.updateCompletedNode(componentId, TaskStatus.SUCCESSFUL))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining("Cannot update visible graph node comp1");
 
     this.dagBuilder.clearConnectedComponents(componentId);
   }

@@ -1,28 +1,28 @@
 package com.dream11.orchestrator.provisioner;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dream11.orchestrator.constants.NamespaceProviderType;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-public class NamespaceProviderFactoryTest {
+class NamespaceProviderFactoryTest {
 
   @Mock NamespaceProviderType nullNamespaceProviderType;
 
   @Test
   void testGetProviderNullArgument() {
-    assertThrows(
-        NullPointerException.class,
-        () -> NamespaceProviderFactory.getProvider(this.nullNamespaceProviderType),
-        "Should have thrown NullPointerException");
+    assertThatThrownBy(() -> NamespaceProviderFactory.getProvider(this.nullNamespaceProviderType))
+        .isInstanceOf(NullPointerException.class)
+        .hasMessageContaining("namespaceProviderType is marked non-null but is null");
   }
 
   @Test
   void testGetProviderIllegalArgument() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> NamespaceProviderFactory.getProvider(NamespaceProviderType.valueOf("test")),
-        "Should have thrown IllegalArgumentException");
+    assertThatThrownBy(
+            () -> NamespaceProviderFactory.getProvider(NamespaceProviderType.valueOf("test")))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining(
+            "No enum constant com.dream11.orchestrator.constants.NamespaceProviderType.test");
   }
 }

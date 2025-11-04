@@ -1,9 +1,11 @@
 package com.dream11.orchestrator.util;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dream11.orchestrator.inject.AppContext;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -29,13 +31,13 @@ class ManifestUtilTest {
   void testBuildsExpectedNamespace(
       String env, String service, long componentExecutionId, String expected) {
     String actual = ManifestUtil.getNamespace(env, service, componentExecutionId);
-    assertEquals(expected, actual);
+    assertThat(expected).isEqualTo(actual);
   }
 
   @Test
   void testGetNamespaceWithEmptyTraceId() {
     AppContext.setTraceId("");
     String a = ManifestUtil.getNamespace("envName", "serviceName", 0L);
-    assertEquals("envName-serviceName-0", a);
+    assertThat("envName-serviceName-0").isEqualTo(a);
   }
 }

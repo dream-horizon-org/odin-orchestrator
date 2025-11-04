@@ -1,7 +1,7 @@
 package com.dream11.orchestrator.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dream11.orchestrator.config.AppConfig;
 import com.dream11.queue.QueueProvider;
@@ -63,22 +63,20 @@ class ConfigUtilTest {
         ConfigFactory.parseString(
             "runner.hostVolumeMounts = \"[\\\"/h1:/c1:ro\\\", \\\"/h2:/c2:rw\\\"]\"");
 
-    assertThrows(
-        InvocationTargetException.class,
-        () -> invokeParseArray(input, ""),
-        "Should have thrown InvocationTargetException");
+    assertThatThrownBy(() -> invokeParseArray(input, ""))
+        .isInstanceOf(InvocationTargetException.class);
 
     Config result = invokeParseArray(input, path);
 
-    assertTrue(result.hasPath(path), "Result config should have the converted path");
-    assertEquals(ConfigValueType.LIST, result.getValue(path).valueType(), "Expected a LIST value");
+    assertThat(result.hasPath(path)).isTrue();
+    assertThat(ConfigValueType.LIST).isEqualTo(result.getValue(path).valueType());
 
     ConfigList list = result.getList(path);
-    assertEquals(2, list.size());
-    assertEquals("/h1:/c1:ro", result.getStringList(path).get(0));
-    assertEquals("/h2:/c2:rw", result.getStringList(path).get(1));
+    assertThat(2).isEqualTo(list.size());
+    assertThat("/h1:/c1:ro").isEqualTo(result.getStringList(path).get(0));
+    assertThat("/h2:/c2:rw").isEqualTo(result.getStringList(path).get(1));
 
     Config merged = result.withFallback(input);
-    assertEquals(ConfigValueType.LIST, merged.getValue(path).valueType());
+    assertThat(ConfigValueType.LIST).isEqualTo(merged.getValue(path).valueType());
   }
 }

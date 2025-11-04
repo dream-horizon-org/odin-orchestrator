@@ -1,6 +1,6 @@
 package com.dream11.orchestrator.service;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dream11.orchestrator.constants.Constants;
 import com.dream11.orchestrator.dto.request.ComponentAction;
@@ -18,7 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class ExecutorServiceTest {
+class ExecutorServiceTest {
 
   @Mock(answer = Answers.RETURNS_DEEP_STUBS)
   KubernetesRunnerProvisioner kubernetesRunnerProvisioner;
@@ -50,10 +50,9 @@ public class ExecutorServiceTest {
   @Test
   void testCleanup() {
 
-    assertThrows(
-        OrchestratorException.class,
-        () -> this.executorService.checkInit(),
-        "Should have thrown OrchestratorException");
+    assertThatThrownBy(() -> this.executorService.checkInit())
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining("Deployer service object uninitialized. Call init() first");
 
     this.executorService.init(0, "namespace", this.serviceRequestMessageBody);
     this.executorService.checkInit();

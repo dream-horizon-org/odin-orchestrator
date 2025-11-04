@@ -18,11 +18,13 @@ class TraceIdConverterTest {
   void setUp() {
     this.traceIdConverter = new TraceIdConverter();
     this.mockLoggingEvent = mock(ILoggingEvent.class);
+    // Reset AppContext trace ID before each test
     AppContext.setTraceId(null);
   }
 
   @AfterEach
   void tearDown() {
+    // Clean up after each test
     AppContext.setTraceId(null);
   }
 

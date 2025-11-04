@@ -1,6 +1,6 @@
 package com.dream11.orchestrator.processor;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dream11.orchestrator.dto.request.RequestMessage;
 import com.dream11.queue.producer.MessageProducer;
@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class NamespaceMessageProcessorTest {
+class NamespaceMessageProcessorTest {
 
   @Mock MessageProducer<String> messageProducer;
   @InjectMocks NamespaceMessageProcessor namespaceMessageProcessor;
@@ -20,11 +20,9 @@ public class NamespaceMessageProcessorTest {
 
   @Test
   void testProcessorWithNullRequestMessage() {
-    assertThrows(
-        NullPointerException.class,
-        () -> this.namespaceMessageProcessor.process(this.nullRequestMessage),
-        "Should have thrown NullPointerException");
-
-    this.namespaceMessageProcessor.toString();
+    assertThatThrownBy(() -> this.namespaceMessageProcessor.process(this.nullRequestMessage))
+        .isInstanceOf(NullPointerException.class)
+        .hasMessageContaining(
+            "Cannot invoke \"com.dream11.orchestrator.dto.request.NamespaceRequestMessageBody.getName()\" because \"namespaceRequestMessageBody\" is null");
   }
 }
