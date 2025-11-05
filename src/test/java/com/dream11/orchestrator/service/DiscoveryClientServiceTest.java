@@ -82,8 +82,12 @@ class DiscoveryClientServiceTest {
   @Test
   void testContainsCnameRecordsWithIp() throws JsonProcessingException {
     // Arrange
+<<<<<<< HEAD
     String discoveryOutput = new JSONObject("key", "192.168.1.1").toString();
 
+=======
+    String discoveryOutput = new JSONObject().put("key", "192.168.1.1").toString();
+>>>>>>> cb7b4fa (formatted all tests in AAA pattern)
     // Act
     boolean result = discoveryClientService.containsCnameRecords(discoveryOutput);
 
