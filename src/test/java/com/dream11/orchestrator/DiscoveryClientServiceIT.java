@@ -292,7 +292,8 @@ class DiscoveryClientServiceIT {
                         """,
         UNDEPLOY_ACTION_NAME);
 
-    assertThat("{discovery=test}").isEqualTo(componentAction.getBaseConfig().toString());
+    // Assert
+    assertThat(componentAction.getBaseConfig().toString()).isEqualTo("{discovery=test}");
   }
 
   @Test
@@ -342,6 +343,7 @@ class DiscoveryClientServiceIT {
     ComponentAction componentAction = createComponentAction();
     componentAction.setBaseConfig(Map.of("discovery", Map.of("private", "test-route.private")));
 
+    // Assert
     assertThatThrownBy(
             () ->
                 discoveryClientService.handleDiscovery(
@@ -380,8 +382,11 @@ class DiscoveryClientServiceIT {
                               }
                             """)));
 
+    // Act
     ComponentAction componentAction = createComponentAction();
     componentAction.setBaseConfig(Map.of("discovery", Map.of("private", "test-route.private")));
+
+    // Assert
     assertThatThrownBy(
             () ->
                 discoveryClientService.handleDiscovery(
@@ -488,12 +493,15 @@ class DiscoveryClientServiceIT {
   @Test
   void testDoesDNSResolveCorrectlyFalseCase() throws JsonProcessingException {
 
+    // Arrange
     String userDataJson = "{\"discovery\":{\"public\":\"demo\",\"private\":\"demo\"}}";
     String runnerDataJson = "{\"discovery\":{\"public\":\"test\",\"private\":\"test\"}}";
 
+    // Act
     JsonNode userDataDiscoveryNode = AppContext.getObjectMapper().readTree(userDataJson);
     JsonNode runnerDiscoveryOutputNode = AppContext.getObjectMapper().readTree(runnerDataJson);
 
+    // Assert
     assertThat(
             this.discoveryClientService.doesDNSResolveCorrectly(
                 runnerDiscoveryOutputNode, userDataDiscoveryNode))
@@ -503,14 +511,17 @@ class DiscoveryClientServiceIT {
   @Test
   void testDoesDNSResolveCorrectlyTrueCase() throws JsonProcessingException {
 
+    // Arrange
     String userDataJson =
         "{\"discovery\":{\"public\":\"example.com\",\"private\":\"example.local\"}}";
     String runnerDataJson =
         "{\"discovery\":{\"public\":\"example.com\",\"private\":\"example.local\"}}";
 
+    // Act
     JsonNode userDataDiscoveryNode = AppContext.getObjectMapper().readTree(userDataJson);
     JsonNode runnerDiscoveryOutputNode = AppContext.getObjectMapper().readTree(runnerDataJson);
 
+    // Assert
     assertThat(
             this.discoveryClientService.doesDNSResolveCorrectly(
                 runnerDiscoveryOutputNode, userDataDiscoveryNode))
@@ -520,12 +531,15 @@ class DiscoveryClientServiceIT {
   @Test
   void testDoesDNSResolveCorrectlyWithEmptyJson() throws JsonProcessingException {
 
+    // Arrange
     String userDataJson = "{}";
     String runnerDataJson = "{}";
 
+    // Act
     JsonNode userDataDiscoveryNode = AppContext.getObjectMapper().readTree(userDataJson);
     JsonNode runnerDiscoveryOutputNode = AppContext.getObjectMapper().readTree(runnerDataJson);
 
+    // Assert
     assertThat(
             this.discoveryClientService.doesDNSResolveCorrectly(
                 runnerDiscoveryOutputNode, userDataDiscoveryNode))
@@ -535,10 +549,13 @@ class DiscoveryClientServiceIT {
   @Test
   void testDoesDNSResolveCorrectlyWithNullUserDataJson() throws JsonProcessingException {
 
+    // Arrange
     String runnerDataJson = "{}";
 
+    // Act
     JsonNode runnerDiscoveryOutputNode = AppContext.getObjectMapper().readTree(runnerDataJson);
 
+    // Assert
     assertThatThrownBy(
             () ->
                 this.discoveryClientService.doesDNSResolveCorrectly(

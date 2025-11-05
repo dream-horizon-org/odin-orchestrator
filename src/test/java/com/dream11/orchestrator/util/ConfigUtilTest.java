@@ -39,6 +39,7 @@ class ConfigUtilTest {
 
     // Act
     AppConfig config = ConfigUtil.readConfig();
+
     // Assert
     assertThat(config).isNotNull();
     assertThat(config.getRunner().getDind().getEnabled()).isFalse();
@@ -58,25 +59,28 @@ class ConfigUtilTest {
 
   @Test
   void testParseArrayConfigParsesStringArrayToList() {
+    // Arrange
     String path = "runner.hostVolumeMounts";
     Config input =
         ConfigFactory.parseString(
             "runner.hostVolumeMounts = \"[\\\"/h1:/c1:ro\\\", \\\"/h2:/c2:rw\\\"]\"");
 
+    // Act
+    Config result = invokeParseArray(input, path);
+    ConfigList list = result.getList(path);
+    Config merged = result.withFallback(input);
+
+    // Assert
     assertThatThrownBy(() -> invokeParseArray(input, ""))
         .isInstanceOf(InvocationTargetException.class);
-
-    Config result = invokeParseArray(input, path);
 
     assertThat(result.hasPath(path)).isTrue();
     assertThat(ConfigValueType.LIST).isEqualTo(result.getValue(path).valueType());
 
-    ConfigList list = result.getList(path);
-    assertThat(2).isEqualTo(list.size());
-    assertThat("/h1:/c1:ro").isEqualTo(result.getStringList(path).get(0));
-    assertThat("/h2:/c2:rw").isEqualTo(result.getStringList(path).get(1));
+    assertThat(list.size()).isEqualTo(2);
+    assertThat(result.getStringList(path).get(0)).isEqualTo("/h1:/c1:ro");
+    assertThat(result.getStringList(path).get(1)).isEqualTo("/h2:/c2:rw");
 
-    Config merged = result.withFallback(input);
     assertThat(ConfigValueType.LIST).isEqualTo(merged.getValue(path).valueType());
   }
 }

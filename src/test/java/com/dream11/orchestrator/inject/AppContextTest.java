@@ -21,6 +21,7 @@ class AppContextTest {
 
   @Test
   void testMultipleInstance() {
+    // Assert
     assertThatThrownBy(() -> AppContext.initialize(List.of(new MainModule())))
         .isInstanceOf(OrchestratorException.class)
         .hasMessageContaining(APP_CONTEXT_ALREADY_INITIALIZED.getErrorMessage());
@@ -28,7 +29,10 @@ class AppContextTest {
 
   @Test
   void testNullInstance() {
+    // Act
     AppContext.reset();
+
+    // Assert
     assertThatThrownBy(() -> AppContext.getInstance(Orchestrator.class))
         .isInstanceOf(OrchestratorException.class)
         .hasMessageContaining(APP_CONTEXT_UNINITIALIZED.getErrorMessage());
@@ -36,8 +40,13 @@ class AppContextTest {
 
   @Test
   void testSetTraceId() {
+    // Arrange
     String traceId = "traceId";
+
+    // Act
     AppContext.setTraceId(traceId);
-    assertThat(traceId).isEqualTo(AppContext.getTraceId());
+
+    // Assert
+    assertThat(AppContext.getTraceId()).isEqualTo(traceId);
   }
 }

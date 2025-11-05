@@ -14,6 +14,7 @@ class ServiceUtilTest {
 
   @Test
   void testGetComponentActionByIdWithEmptyInput() {
+    // Assert
     assertThatThrownBy(() -> ServiceUtil.getComponentActionById(0, List.of()))
         .isInstanceOf(OrchestratorException.class)
         .hasMessageContaining("Component action not found for actionId : 0");
@@ -21,9 +22,13 @@ class ServiceUtilTest {
 
   @Test
   void testGetComponentActionByIdTrueCase() {
+    // Arrange
     ComponentAction componentAction = new ComponentAction();
+
+    // Act
     componentAction.setId(0);
 
+    // Assert
     assertThat(componentAction)
         .isEqualTo(ServiceUtil.getComponentActionById(0, List.of(componentAction)));
   }

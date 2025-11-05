@@ -12,6 +12,7 @@ class NamespaceProviderFactoryTest {
 
   @Test
   void testGetProviderNullArgument() {
+    // Act && Assert
     assertThatThrownBy(() -> NamespaceProviderFactory.getProvider(this.nullNamespaceProviderType))
         .isInstanceOf(NullPointerException.class)
         .hasMessageContaining("namespaceProviderType is marked non-null but is null");
@@ -19,6 +20,7 @@ class NamespaceProviderFactoryTest {
 
   @Test
   void testGetProviderIllegalArgument() {
+    // Act && Assert
     assertThatThrownBy(
             () -> NamespaceProviderFactory.getProvider(NamespaceProviderType.valueOf("test")))
         .isInstanceOf(IllegalArgumentException.class)

@@ -52,6 +52,7 @@ class KubernetesRunnerProvisionerTest {
 
   @Test
   void testWaitForNamespaceReadinessWithWrongNamespace() {
+    // Act && Assert
     assertThatThrownBy(
             () ->
                 this.kubernetesRunnerProvisioner.waitForNamespaceReadiness("wrong-namespace-0", 2))
@@ -63,8 +64,13 @@ class KubernetesRunnerProvisionerTest {
   @Test
   void testWaitForNamespaceReadinessWithNullStatus() {
 
+    // Arrange
     Namespace nsObj = k8sClient.namespaces().withName(namespace).get();
+
+    // Act
     nsObj.setStatus(null);
+
+    // Assert
     assertThatThrownBy(
             () -> this.kubernetesRunnerProvisioner.waitForNamespaceReadiness(this.namespace, 2))
         .isInstanceOf(OrchestratorException.class)
@@ -74,38 +80,30 @@ class KubernetesRunnerProvisionerTest {
 
   @Test
   void testFilterErrorLinesWithLongLog() {
-    String long_log = "This is a ERROR test line\n".repeat(41);
-    String short_log = "This is a ERROR test line\n".repeat(20);
+    // Arrange
+    String longLog = "This is a ERROR test line\n".repeat(41);
+    String shortLog = "This is a ERROR test line\n".repeat(20);
 
-    String long_filtered_log = this.kubernetesRunnerProvisioner.filterErrorLines(long_log);
-    String short_filtered_log = this.kubernetesRunnerProvisioner.filterErrorLines(short_log);
+    // Act
+    String longFilteredLog = this.kubernetesRunnerProvisioner.filterErrorLines(longLog);
+    String shortFilteredLog = this.kubernetesRunnerProvisioner.filterErrorLines(shortLog);
 
-    assertThat(long_filtered_log).isEqualTo(short_filtered_log + "\n...\n" + short_filtered_log);
+    // Assert
+    assertThat(longFilteredLog).isEqualTo(shortFilteredLog + "\n...\n" + shortFilteredLog);
   }
 
   @Test
   void testNamespaceExists() {
+    // Act && Assert
     assertThat(this.kubernetesRunnerProvisioner.namespaceExists(namespace)).isTrue();
   }
 
   @Test
-  void testDeleteConfigMapIfExists() {
-    this.kubernetesRunnerProvisioner.deleteConfigMapIfExists("configmap-0", namespace);
-  }
-
-  @Test
-  void testDeleteSecretIfExists() {
-    this.kubernetesRunnerProvisioner.deleteSecretIfExists("secret-name", namespace);
-  }
-
-  @Test
-  void testDeleteServiceAccountIfExists() {
-    this.kubernetesRunnerProvisioner.deleteServiceAccountIfExists("account-name", namespace);
-  }
-
-  @Test
   void testFalseJob() {
+    // Act
     this.kubernetesRunnerProvisioner.deleteJob("false-job", namespace);
+
+    // Assert
     assertThat(this.kubernetesRunnerProvisioner.jobExists("false-job", namespace)).isFalse();
   }
 

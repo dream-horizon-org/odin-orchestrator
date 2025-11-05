@@ -31,13 +31,16 @@ class ManifestUtilTest {
   void testBuildsExpectedNamespace(
       String env, String service, long componentExecutionId, String expected) {
     String actual = ManifestUtil.getNamespace(env, service, componentExecutionId);
-    assertThat(expected).isEqualTo(actual);
+    assertThat(actual).isEqualTo(expected);
   }
 
   @Test
   void testGetNamespaceWithEmptyTraceId() {
+    // Act
     AppContext.setTraceId("");
-    String a = ManifestUtil.getNamespace("envName", "serviceName", 0L);
-    assertThat("envName-serviceName-0").isEqualTo(a);
+    String namespace = ManifestUtil.getNamespace("envName", "serviceName", 0L);
+
+    // Assert
+    assertThat(namespace).isEqualTo("envName-serviceName-0");
   }
 }

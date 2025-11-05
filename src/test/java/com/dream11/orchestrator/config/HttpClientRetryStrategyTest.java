@@ -34,9 +34,11 @@ class HttpClientRetryStrategyTest {
 
     @Test
     void trueWhileWithinLimit() {
+      // Arrange
       HttpRequest req = mock(HttpRequest.class);
       HttpContext ctx = mock(HttpContext.class);
 
+      // Assert
       IntStream.rangeClosed(1, retryCount)
           .forEach(
               execCount -> {
@@ -47,13 +49,19 @@ class HttpClientRetryStrategyTest {
 
     @Test
     void falseAfterLimit() {
+      // Act
       boolean retry = strategy.retryRequest(null, new IOException("boom"), retryCount + 1, null);
+
+      // Assert
       assertThat(retry).isFalse();
     }
 
     @Test
     void ignoresNulls() {
+      // Act
       boolean retry = strategy.retryRequest(null, null, 1, null);
+
+      // Assert
       assertThat(retry).isTrue();
     }
   }
@@ -72,8 +80,13 @@ class HttpClientRetryStrategyTest {
           HttpStatusCode.THROTTLING
         })
     void retryableStatusesTrueWithinLimit(int status) {
+      // Arrange
       HttpResponse resp = mockResponse(status);
+
+      // Act
       boolean retry = strategy.retryRequest(resp, retryCount, null);
+
+      // Assert
       assertThat(retry).isTrue();
     }
 
@@ -88,23 +101,36 @@ class HttpClientRetryStrategyTest {
           HttpStatusCode.THROTTLING
         })
     void retryableStatusesFalseAfterLimit(int status) {
+      // Arrange
       HttpResponse resp = mockResponse(status);
+
+      // Act
       boolean retry = strategy.retryRequest(resp, retryCount + 1, null);
+
+      // Assert
       assertThat(retry).isFalse();
     }
 
     @ParameterizedTest
     @ValueSource(ints = {200, 201, 204, 301, 304, 400, 401, 403, 404, 422})
     void nonRetryableStatusesFalse(int status) {
+      // Arrange
       HttpResponse resp = mockResponse(status);
+
+      // Act
       boolean retry = strategy.retryRequest(resp, 1, null);
+
+      // Assert
       assertThat(retry).isFalse();
     }
   }
 
   @Test
   void retryInterval() {
+    // Act
     TimeValue tv = strategy.getRetryInterval(null, 1, null);
+
+    // Assert
     assertThat(retryIntervalSecs).isEqualTo(tv.toSeconds());
     assertThat(TimeValue.ofSeconds(retryIntervalSecs)).isEqualTo(tv);
   }

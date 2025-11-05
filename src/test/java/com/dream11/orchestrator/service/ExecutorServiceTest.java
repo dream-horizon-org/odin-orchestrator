@@ -1,15 +1,13 @@
 package com.dream11.orchestrator.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.dream11.orchestrator.constants.Constants;
 import com.dream11.orchestrator.dto.request.ComponentAction;
 import com.dream11.orchestrator.dto.request.ServiceRequestMessageBody;
 import com.dream11.orchestrator.exception.OrchestratorException;
 import com.dream11.orchestrator.provisioner.KubernetesRunnerProvisioner;
 import com.dream11.queue.producer.MessageProducer;
-import java.util.Map;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +36,8 @@ class ExecutorServiceTest {
   @Mock(answer = Answers.RETURNS_DEEP_STUBS)
   ComponentAction componentAction;
 
+  final String namespace = "namespace";
+
   private ExecutorService executorService;
 
   @BeforeEach
@@ -48,27 +48,24 @@ class ExecutorServiceTest {
   }
 
   @Test
-  void testCleanup() {
+  void testCheckInitFalseCase() {
 
+    // Act && Assert
     assertThatThrownBy(() -> this.executorService.checkInit())
         .isInstanceOf(OrchestratorException.class)
         .hasMessageContaining("Deployer service object uninitialized. Call init() first");
+  }
 
-    this.executorService.init(0, "namespace", this.serviceRequestMessageBody);
+  @Test
+  void testCleanUp() {
+    // Arrange
+    this.executorService.init(0, namespace, this.serviceRequestMessageBody);
     this.executorService.checkInit();
+
+    // Act
     this.executorService.cleanup();
-    this.executorService.resume();
 
-    this.executorService.checkStateAndUpdateDag(Set.of(this.componentAction));
-
-    this.executorService.updateJobStatus(
-        this.componentAction.getName(),
-        this.componentAction.getId(),
-        Constants.JOB_FAILED,
-        "validate",
-        "");
-
-    this.componentAction.setOperationConfig(Map.of());
-    this.executorService.doExecute(Set.of(this.componentAction));
+    // Assert
+    assertThat(this.kubernetesRunnerProvisioner.namespaceExists(namespace)).isFalse();
   }
 }

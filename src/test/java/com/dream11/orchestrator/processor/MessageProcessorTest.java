@@ -43,6 +43,7 @@ class MessageProcessorTest {
 
   @Test
   void testGetProcessorWithNullArgument() {
+    // Act && Assert
     assertThatThrownBy(() -> MessageProcessor.getProcessor(this.nullRequestMessageType))
         .isInstanceOf(NullPointerException.class)
         .hasMessageContaining("messageType is marked non-null but is null");
@@ -50,6 +51,7 @@ class MessageProcessorTest {
 
   @Test
   void testGetMessageProcessorWithWrongType() {
+    // Act && Assert
     assertThatThrownBy(() -> MessageProcessor.getProcessor(RequestMessageType.valueOf("WrongType")))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining(

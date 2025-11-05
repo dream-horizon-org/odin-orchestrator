@@ -77,7 +77,10 @@ class DagBuilderTest {
 
   @Test
   void testDagBuilderReset() {
+    // Act
     this.dagBuilder.reset();
+
+    // Assert
     assertThat(this.dagBuilder.isEmpty()).isTrue();
   }
 
@@ -86,6 +89,7 @@ class DagBuilderTest {
   @SneakyThrows
   void testIllegalInit(List<JSONObject> componentActions, Integer componentId) {
 
+    // Arrange
     JSONObject requestBody =
         TestUtil.getServiceRequestMessage(
             TestUtil.getServiceMessageBody(
@@ -95,29 +99,17 @@ class DagBuilderTest {
     ServiceRequestMessageBody serviceRequestMessageBody =
         (ServiceRequestMessageBody) requestMessage.getBody();
 
+    // Assert
     assertThatThrownBy(() -> dagBuilder.updateCompletedNode(1, TaskStatus.SUCCESSFUL))
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("Graph not initialized. Use init() first");
-
-    this.dagBuilder.init(serviceRequestMessageBody);
-
-    assertThatThrownBy(() -> this.dagBuilder.init(null))
-        .isInstanceOf(OrchestratorException.class)
-        .hasMessageContaining("Graph already initialized");
-
-    assertThatThrownBy(
-            () -> this.dagBuilder.updateCompletedNode(componentId, TaskStatus.SUCCESSFUL))
-        .isInstanceOf(OrchestratorException.class)
-        .hasMessageContaining("Cannot update visible graph node comp1");
-
-    this.dagBuilder.clearConnectedComponents(componentId);
   }
 
   @ParameterizedTest
   @MethodSource("componentActions")
   @SneakyThrows
-  void testUpdateCompletedNode(List<JSONObject> componentActions, Integer componentId) {
-
+  void testDoubleInit(List<JSONObject> componentActions, Integer componentId) {
+    // Arrange
     JSONObject requestBody =
         TestUtil.getServiceRequestMessage(
             TestUtil.getServiceMessageBody(
@@ -127,9 +119,61 @@ class DagBuilderTest {
     ServiceRequestMessageBody serviceRequestMessageBody =
         (ServiceRequestMessageBody) requestMessage.getBody();
 
+    // Act
     this.dagBuilder.init(serviceRequestMessageBody);
 
+    // Assert
+    assertThatThrownBy(() -> this.dagBuilder.init(null))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining("Graph already initialized");
+  }
+
+  @ParameterizedTest
+  @MethodSource("componentActions")
+  @SneakyThrows
+  void testUpdateCompletedNodeWithVisibleNode(
+      List<JSONObject> componentActions, Integer componentId) {
+
+    // Arrange
+    JSONObject requestBody =
+        TestUtil.getServiceRequestMessage(
+            TestUtil.getServiceMessageBody(
+                componentActions, TestUtil.getRandomString(), TestUtil.getRandomString()));
+    RequestMessage requestMessage =
+        this.objectMapper.readValue(requestBody.toString(), RequestMessage.class);
+    ServiceRequestMessageBody serviceRequestMessageBody =
+        (ServiceRequestMessageBody) requestMessage.getBody();
+    this.dagBuilder.init(serviceRequestMessageBody);
+
+    // Assert
+    assertThatThrownBy(
+            () -> this.dagBuilder.updateCompletedNode(componentId, TaskStatus.SUCCESSFUL))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining("Cannot update visible graph node comp1");
+  }
+
+  @ParameterizedTest
+  @MethodSource("componentActions")
+  @SneakyThrows
+  void testUpdateCompletedNodeWithInvisibleNode(
+      List<JSONObject> componentActions, Integer componentId) {
+
+    // Arrange
+    JSONObject requestBody =
+        TestUtil.getServiceRequestMessage(
+            TestUtil.getServiceMessageBody(
+                componentActions, TestUtil.getRandomString(), TestUtil.getRandomString()));
+    RequestMessage requestMessage =
+        this.objectMapper.readValue(requestBody.toString(), RequestMessage.class);
+    ServiceRequestMessageBody serviceRequestMessageBody =
+        (ServiceRequestMessageBody) requestMessage.getBody();
+    this.dagBuilder.init(serviceRequestMessageBody);
+
+    // Act
     this.dagBuilder.setVisibilityFalse(componentId);
-    this.dagBuilder.updateCompletedNode(componentId, TaskStatus.SUCCESSFUL);
+    this.dagBuilder.updateCompletedNode(componentId, TaskStatus.FAILED);
+
+    // Assert
+    assertThat(this.dagBuilder.executionSuccess()).isFalse();
   }
 }

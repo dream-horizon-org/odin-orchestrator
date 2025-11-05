@@ -18,13 +18,18 @@ class JsonUtilTest {
 
   @Test
   void testExtractMatchingLeafNodesBaseCase() throws JsonProcessingException {
+    // Arrange
     JsonNode node1 = OBJECT_MAPPER.readTree("{\"key1\":\"value1\"}");
     JsonNode node2 = OBJECT_MAPPER.readTree("{\"key1\":\"value2\"}");
     JsonNode node3 = OBJECT_MAPPER.readTree("");
+
+    // Act
     List<Pair<String, String>> pairs = JsonUtil.extractMatchingLeafNodes(node1, node2);
-    assertThat(1).isEqualTo(JsonUtil.extractMatchingLeafNodes(node1, node2).size());
-    assertThat("value1").isEqualTo(pairs.get(0).getLeft());
-    assertThat("value2").isEqualTo(pairs.get(0).getRight());
+
+    // Assert
+    assertThat(JsonUtil.extractMatchingLeafNodes(node1, node2).size()).isEqualTo(1);
+    assertThat(pairs.get(0).getLeft()).isEqualTo("value1");
+    assertThat(pairs.get(0).getRight()).isEqualTo("value2");
 
     assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node2, node3))
         .isInstanceOf(OrchestratorException.class)
@@ -34,27 +39,34 @@ class JsonUtilTest {
 
   @Test
   void testExtractMatchingLeafNodesNestedJson() throws JsonProcessingException {
+    // Arrange
     JsonNode node1 =
         OBJECT_MAPPER.readTree(
             "{\"discovery\":{\"public\":\"xyz.com\",\"private\":\"xyz.local\"}}");
     JsonNode node2 =
         OBJECT_MAPPER.readTree(
             "{\"discovery\":{\"public\":\"pqr.com\",\"private\":\"pqr.local\"}}");
+
+    // Act
     List<Pair<String, String>> pairs = JsonUtil.extractMatchingLeafNodes(node1, node2);
-    assertThat(2).isEqualTo(JsonUtil.extractMatchingLeafNodes(node1, node2).size());
-    assertThat("xyz.com").isEqualTo(pairs.get(0).getLeft());
-    assertThat("pqr.com").isEqualTo(pairs.get(0).getRight());
-    assertThat("xyz.local").isEqualTo(pairs.get(1).getLeft());
-    assertThat("pqr.local").isEqualTo(pairs.get(1).getRight());
+
+    // Assert
+    assertThat(JsonUtil.extractMatchingLeafNodes(node1, node2).size()).isEqualTo(2);
+    assertThat(pairs.get(0).getLeft()).isEqualTo("xyz.com");
+    assertThat(pairs.get(0).getRight()).isEqualTo("pqr.com");
+    assertThat(pairs.get(1).getLeft()).isEqualTo("xyz.local");
+    assertThat(pairs.get(1).getRight()).isEqualTo("pqr.local");
   }
 
   @Test
   void testExtractMatchingLeafNodesDifferentTrees() throws JsonProcessingException {
+    // Arrange
     JsonNode node1 =
         OBJECT_MAPPER.readTree(
             "{\"discovery\":{\"public\":\"xyz.com\",\"private\":\"xyz.local\"}}");
     JsonNode node2 = OBJECT_MAPPER.readTree("{\"discovery\":{\"noMatch\":\"pqr.com\"}}");
 
+    // Assert
     assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node1, node2))
         .isInstanceOf(OrchestratorException.class)
         .hasMessageContaining("Json structure of nodes node1[public] and node2[] does not match.");
@@ -62,24 +74,25 @@ class JsonUtilTest {
 
   @Test
   void testExtractMatchingLeafNodesArrayInput() throws JsonProcessingException {
+    // Arrange
     JsonNode node1 = OBJECT_MAPPER.readTree("[\"key\"]");
+    JsonNode node2 = OBJECT_MAPPER.readTree("[\"key\", \"value1\"]");
+    JsonNode node3 = OBJECT_MAPPER.readTree("[\"key\", \"value2\"]");
+    JsonNode objectNode = OBJECT_MAPPER.readTree("{\"discovery\":{\"public\":\"xyz.com\"}}");
 
-    assertThat(1).isEqualTo(JsonUtil.extractMatchingLeafNodes(node1, node1).size());
+    // Assert
+    assertThat(JsonUtil.extractMatchingLeafNodes(node1, node1).size()).isEqualTo(1);
 
-    JsonNode node3 = OBJECT_MAPPER.readTree("[\"key\", \"value1\"]");
-
-    assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node1, node3))
+    assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node1, node2))
         .isInstanceOf(OrchestratorException.class)
         .hasMessageContaining(
             "Json structure of nodes node1[[\"key\"]] and node2[[\"key\",\"value1\"]] does not match.");
 
-    JsonNode node4 = OBJECT_MAPPER.readTree("[\"key\", \"value2\"]");
-    assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node3, node4))
+    assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node2, node3))
         .isInstanceOf(OrchestratorException.class)
         .hasMessageContaining(
             "Json structure of nodes node1[[\"key\",\"value1\"]] and node2[[\"key\",\"value2\"]] does not match.");
 
-    JsonNode objectNode = OBJECT_MAPPER.readTree("{\"discovery\":{\"public\":\"xyz.com\"}}");
     assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node1, objectNode))
         .isInstanceOf(OrchestratorException.class)
         .hasMessageContaining(
@@ -88,11 +101,15 @@ class JsonUtilTest {
 
   @Test
   void testExtractMatchingLeafNodesNullInput() throws JsonProcessingException {
+    // Arrange
     JsonNode node1 = null;
     JsonNode node2 = OBJECT_MAPPER.readTree("");
 
-    List<Pair<String, String>> NullPairs = JsonUtil.extractMatchingLeafNodes(node1, node1);
-    assertThat(0).isEqualTo(NullPairs.size());
+    // Act
+    List<Pair<String, String>> nullPairs = JsonUtil.extractMatchingLeafNodes(node1, node1);
+
+    // Assert
+    assertThat(nullPairs.size()).isEqualTo(0);
 
     assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node1, node2))
         .isInstanceOf(OrchestratorException.class)
@@ -107,9 +124,11 @@ class JsonUtilTest {
 
   @Test
   void testExtractMatchingLeafNodesWithValueNodesInput() throws JsonProcessingException {
+    // Arrange
     JsonNode node1 = OBJECT_MAPPER.readTree("\"test\"");
     JsonNode node2 = OBJECT_MAPPER.readTree("");
 
+    // Assert
     assertThatThrownBy(() -> JsonUtil.extractMatchingLeafNodes(node1, node2))
         .isInstanceOf(OrchestratorException.class)
         .hasMessageContaining(

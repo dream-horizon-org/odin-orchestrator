@@ -5,11 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 class DnsUtilTest {
-
-  @Mock Set<String> nullTargets;
 
   @Test
   void testIsDnsResolvableToTargetFailures() {
@@ -24,7 +21,8 @@ class DnsUtilTest {
 
   @Test
   void testIsDnsResolvableToTargetExceptionCase() {
-    assertThatThrownBy(() -> DnsUtil.isDnsResolvableToTarget("test", this.nullTargets))
+    // Assert
+    assertThatThrownBy(() -> DnsUtil.isDnsResolvableToTarget("test", null))
         .isInstanceOf(NullPointerException.class)
         .hasMessageContaining(
             "Cannot invoke \"java.util.Set.isEmpty()\" because \"targets\" is null");
