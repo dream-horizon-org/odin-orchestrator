@@ -1,9 +1,12 @@
 package com.dream11.orchestrator.graph;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.dream11.orchestrator.constants.TaskStatus;
 import com.dream11.orchestrator.dto.request.RequestMessage;
 import com.dream11.orchestrator.dto.request.ServiceRequestMessageBody;
+import com.dream11.orchestrator.exception.OrchestratorException;
 import com.dream11.orchestrator.inject.AppContext;
 import com.dream11.orchestrator.util.TestUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +17,7 @@ import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -69,5 +73,107 @@ class DagBuilderTest {
             List.of(componentAction1, componentAction2, componentAction3, componentAction5),
             componentAction1.get("id"),
             new HashSet<>(Set.of(componentAction3.getInt("id")))));
+  }
+
+  @Test
+  void testDagBuilderReset() {
+    // Act
+    this.dagBuilder.reset();
+
+    // Assert
+    assertThat(this.dagBuilder.isEmpty()).isTrue();
+  }
+
+  @ParameterizedTest
+  @MethodSource("componentActions")
+  @SneakyThrows
+  void testIllegalInit(List<JSONObject> componentActions, Integer componentId) {
+
+    // Arrange
+    JSONObject requestBody =
+        TestUtil.getServiceRequestMessage(
+            TestUtil.getServiceMessageBody(
+                componentActions, TestUtil.getRandomString(), TestUtil.getRandomString()));
+    RequestMessage requestMessage =
+        this.objectMapper.readValue(requestBody.toString(), RequestMessage.class);
+    ServiceRequestMessageBody serviceRequestMessageBody =
+        (ServiceRequestMessageBody) requestMessage.getBody();
+
+    // Assert
+    assertThatThrownBy(() -> dagBuilder.updateCompletedNode(1, TaskStatus.SUCCESSFUL))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("Graph not initialized. Use init() first");
+  }
+
+  @ParameterizedTest
+  @MethodSource("componentActions")
+  @SneakyThrows
+  void testDoubleInit(List<JSONObject> componentActions, Integer componentId) {
+    // Arrange
+    JSONObject requestBody =
+        TestUtil.getServiceRequestMessage(
+            TestUtil.getServiceMessageBody(
+                componentActions, TestUtil.getRandomString(), TestUtil.getRandomString()));
+    RequestMessage requestMessage =
+        this.objectMapper.readValue(requestBody.toString(), RequestMessage.class);
+    ServiceRequestMessageBody serviceRequestMessageBody =
+        (ServiceRequestMessageBody) requestMessage.getBody();
+
+    // Act
+    this.dagBuilder.init(serviceRequestMessageBody);
+
+    // Assert
+    assertThatThrownBy(() -> this.dagBuilder.init(null))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining("Graph already initialized");
+  }
+
+  @ParameterizedTest
+  @MethodSource("componentActions")
+  @SneakyThrows
+  void testUpdateCompletedNodeWithVisibleNode(
+      List<JSONObject> componentActions, Integer componentId) {
+
+    // Arrange
+    JSONObject requestBody =
+        TestUtil.getServiceRequestMessage(
+            TestUtil.getServiceMessageBody(
+                componentActions, TestUtil.getRandomString(), TestUtil.getRandomString()));
+    RequestMessage requestMessage =
+        this.objectMapper.readValue(requestBody.toString(), RequestMessage.class);
+    ServiceRequestMessageBody serviceRequestMessageBody =
+        (ServiceRequestMessageBody) requestMessage.getBody();
+    this.dagBuilder.init(serviceRequestMessageBody);
+
+    // Assert
+    assertThatThrownBy(
+            () -> this.dagBuilder.updateCompletedNode(componentId, TaskStatus.SUCCESSFUL))
+        .isInstanceOf(OrchestratorException.class)
+        .hasMessageContaining("Cannot update visible graph node comp1");
+  }
+
+  @ParameterizedTest
+  @MethodSource("componentActions")
+  @SneakyThrows
+  void testUpdateCompletedNodeWithInvisibleNode(
+      List<JSONObject> componentActions, Integer componentId) {
+
+    // Arrange
+    JSONObject requestBody =
+        TestUtil.getServiceRequestMessage(
+            TestUtil.getServiceMessageBody(
+                componentActions, TestUtil.getRandomString(), TestUtil.getRandomString()));
+    RequestMessage requestMessage =
+        this.objectMapper.readValue(requestBody.toString(), RequestMessage.class);
+    ServiceRequestMessageBody serviceRequestMessageBody =
+        (ServiceRequestMessageBody) requestMessage.getBody();
+    this.dagBuilder.init(serviceRequestMessageBody);
+
+    // Act
+    this.dagBuilder.setVisibilityFalse(componentId);
+    this.dagBuilder.updateCompletedNode(componentId, TaskStatus.FAILED);
+
+    // Assert
+    assertThat(this.dagBuilder.executionSuccess()).isFalse();
   }
 }
