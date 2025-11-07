@@ -26,6 +26,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          token: ${{ secrets.GH_BOT_TOKEN }}
+          fetch-depth: 0
 
       - name: Login to docker
         uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
@@ -75,10 +78,6 @@ jobs:
 
       - name: Test
         env:
-          ODIN_DSL_USERNAME: ${{ secrets.ODIN_DSL_USERNAME }}
-          ODIN_DSL_PASSWORD: ${{ secrets.ODIN_DSL_PASSWORD }}
-          ODIN_COMPONENT_REGISTRY_PASSWORD: ${{ secrets.ODIN_COMPONENT_REGISTRY_PASSWORD }}
-          ODIN_COMPONENT_REGISTRY_USERNAME: ${{ secrets.ODIN_COMPONENT_REGISTRY_USERNAME }}
           ODIN_RUNNER_IMAGE: docker.io/ds-horizon/odin-runner:0.0.1
         run: mvn clean verify --no-transfer-progress
 

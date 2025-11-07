@@ -158,7 +158,7 @@ class ServiceOperationsIT {
         this.getResponse(),
         taskId,
         TaskStatus.FAILED.name(),
-        "[1;31mERROR[0;39m [32mError while deploying my_flavour[0;39m ");
+        "[1;31mERROR[0;39m [32mError while deploying aws_flavour[0;39m ");
     this.assertServiceResponse(this.getResponse(), taskId, TaskStatus.FAILED.name(), null);
   }
 
@@ -174,7 +174,7 @@ class ServiceOperationsIT {
             "comp3", TaskStatus.SUCCESSFUL);
     Map<String, String> componentErrors =
         Map.of(
-            "comp1", "[1;31mERROR[0;39m [32mError while deploying my_flavour[0;39m ",
+            "comp1", "[1;31mERROR[0;39m [32mError while deploying aws_flavour[0;39m ",
             "comp2", "Component execution failed due to dependent component failure");
 
     JSONObject failedComponentAction =
