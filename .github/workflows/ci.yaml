@@ -68,17 +68,17 @@ jobs:
           platforms: linux/amd64
           push: false
           load: true
-          tags: docker.io/ds-horizon/odin-runner:0.0.1
+          tags: docker.io/odinhq/runner:ci
           secrets: PACKER_GITHUB_API_TOKEN=${{ secrets.PACKER_GITHUB_API_TOKEN }}
 
       - name: Add kind kubeconfig
         run: |
           echo "BASE64_ENCODED_KUBECONFIG=$(base64 --wrap 0 < ~/.kube/config)" >> "$GITHUB_ENV"
-          kind load docker-image docker.io/ds-horizon/odin-runner:0.0.1 --name odin
+          kind load docker-image docker.io/odinhq/runner:ci --name odin
 
       - name: Test
         env:
-          ODIN_RUNNER_IMAGE: docker.io/ds-horizon/odin-runner:0.0.1
+          ODIN_RUNNER_IMAGE: docker.io/odinhq/runner:ci
         run: mvn clean verify --no-transfer-progress
 
       - name: Publish Test Report
