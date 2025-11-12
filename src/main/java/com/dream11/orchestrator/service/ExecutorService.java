@@ -189,7 +189,7 @@ public class ExecutorService {
       // Send component execution failed message in queue
       this.sendComponentExecutionFailedMessage(deploymentId, componentName, stageName, logs);
       // Clear DAG to terminate execution if action is not validate
-      if (stageName.equalsIgnoreCase("validate")) {
+      if (stageName.equalsIgnoreCase(Constants.VALIDATE)) {
         dagBuilder.updateCompletedNode(componentActionId, TaskStatus.FAILED);
       } else {
         List<Integer> componentActionIds =
