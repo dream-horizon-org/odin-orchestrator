@@ -35,8 +35,8 @@ public class Constants {
   public static final String UNDEPLOY_ACTION_NAME = "UNDEPLOY";
   public static final String HEALTHCHECK_ACTION_NAME = "HEALTHCHECK";
 
-  public static final String TRACE_ID = "TRACE_ID";
   public static final String RUNNER = "runner";
   public static final String DIND = "dind";
   public static final String ODIN = "odin";
+  public static final String VALIDATE = "validate";
 }

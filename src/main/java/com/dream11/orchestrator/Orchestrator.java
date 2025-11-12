@@ -73,14 +73,23 @@ public class Orchestrator {
                       this.messageProducer, componentResponseMessage);
                 });
         // Send service failed response message
-        ResponseMessage serviceResponseMessage =
+        ResponseMessage.ResponseMessageBuilder serviceResponseMessage =
             ResponseMessage.builder()
                 .id(requestMessage.getId())
                 .type(ResponseMessageType.SERVICE_STATUS)
                 .status(TaskStatus.FAILED)
-                .error(e.getMessage())
-                .build();
-        ApplicationUtil.sendResponseMessage(this.messageProducer, serviceResponseMessage);
+                .error(e.getMessage());
+        // Check if any component action is in validate stage
+        boolean isValidateStage =
+            serviceRequestMessageBody.getComponentActions().stream()
+                .anyMatch(
+                    componentAction ->
+                        componentAction.getStage().getName().equalsIgnoreCase(Constants.VALIDATE));
+        // If stage is validate then set stage in response data
+        if (isValidateStage) {
+          serviceResponseMessage.data(ResponseData.builder().stage(Constants.VALIDATE).build());
+        }
+        ApplicationUtil.sendResponseMessage(this.messageProducer, serviceResponseMessage.build());
       }
     } finally {
       this.messageConsumer.acknowledgeMessage(receivedMessage).get();
