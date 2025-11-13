@@ -4,6 +4,7 @@ import com.dream11.orchestrator.constants.DslStateProvider;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.Map;
@@ -27,7 +28,8 @@ public class DslStateConfig {
     @NotBlank String bucket;
     @NotBlank String region;
     String endpoint = "";
-    boolean forcePathStyle = false;
+    boolean forcePathStyle;
+    @Valid Credentials credentials;
 
     @Override
     public Map<String, Object> getConfig(String key) {
@@ -39,7 +41,21 @@ public class DslStateConfig {
           "region",
           this.region,
           "forcePathStyle",
-          this.forcePathStyle);
+          this.forcePathStyle,
+          "credentials",
+          this.credentials);
+    }
+  }
+
+  @Data
+  public static class Credentials {
+    String awsAccessKeyId;
+    String awsSecretAccessKey;
+
+    @AssertTrue(message = "Either both or none awsAccessKeyId awsSecretAccessKey must be set")
+    boolean isValidKeys() {
+      return (this.awsAccessKeyId == null && this.awsSecretAccessKey == null)
+          || (this.awsAccessKeyId != null && this.awsSecretAccessKey != null);
     }
   }
 }
