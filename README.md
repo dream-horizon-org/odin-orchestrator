@@ -77,7 +77,7 @@ The orchestrator reads defaults from `src/main/resources/application-default.con
 
 | Key | Description | Default |
 | --- | --- | --- |
-| ODIN_COMPONENT_REGISTRY_URL | Registry base URL | https://ds-horizon.github.io/odin-components |
+| ODIN_COMPONENT_REGISTRY_URL | Registry base URL | https://github.com/dream-horizon-org/odin-components |
 | ODIN_COMPONENT_REGISTRY_USERNAME | Basic auth username | - |
 | ODIN_COMPONENT_REGISTRY_PASSWORD | Basic auth password | - |
 
@@ -85,7 +85,7 @@ The orchestrator reads defaults from `src/main/resources/application-default.con
 
 | Key | Description | Default |
 | --- | --- | --- |
-| ODIN_DSL_URL | DSL artifacts base URL | https://github.com/ds-horizon/odin-component-interface/releases/download |
+| ODIN_DSL_URL | DSL artifacts base URL | https://github.com/dream-horizon-org/odin-component-interface/releases/download |
 | ODIN_DSL_USERNAME | DSL auth username | - |
 | ODIN_DSL_PASSWORD | DSL auth password | - |
 | ODIN_DSL_STATE_S3_BUCKET | S3 bucket for state persistence | - |
