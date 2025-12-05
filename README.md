@@ -102,22 +102,22 @@ The orchestrator reads defaults from `src/main/resources/application-default.con
 
 **Runner (Kubernetes Job)**
 
-| Key | Description | Default |
-| --- | --- | --- |
-| ODIN_RUNNER_IMAGE | Runner image | odinhq/runner:0.0.1 |
-| ODIN_RUNNER_RESOURCES_REQUESTS_CPU | Runner CPU request | 100m |
-| ODIN_RUNNER_RESOURCES_REQUESTS_MEMORY | Runner memory request | 100Mi |
-| ODIN_RUNNER_RESOURCES_REQUESTS_STORAGE | Runner ephemeral-storage request | 1Gi |
-| ODIN_RUNNER_RESOURCES_LIMITS_CPU | Runner CPU limit | - |
-| ODIN_RUNNER_RESOURCES_LIMITS_MEMORY | Runner memory limit | - |
-| ODIN_RUNNER_RESOURCES_LIMITS_STORAGE | Runner ephemeral-storage limit | - |
-| ODIN_RUNNER_DIND_ENABLED | Enable DinD sidecar | true |
-| ODIN_RUNNER_DIND_IMAGE | DinD image | docker:dind |
-| ODIN_RUNNER_DIND_RESOURCES_REQUESTS_CPU | DinD CPU request | 100m |
-| ODIN_RUNNER_DIND_RESOURCES_REQUESTS_MEMORY | DinD memory request | 100Mi |
-| ODIN_RUNNER_DIND_RESOURCES_REQUESTS_STORAGE | DinD ephemeral-storage request | 1Gi |
-| ODIN_RUNNER_DIND_RESOURCES_LIMITS_CPU | DinD CPU limit | - |
-| ODIN_RUNNER_DIND_RESOURCES_LIMITS_MEMORY | DinD memory limit | - |
-| ODIN_RUNNER_DIND_RESOURCES_LIMITS_STORAGE | DinD ephemeral-storage limit | - |
-| ODIN_RUNNER_DOCKER_SECRETS | Docker registry secrets for runner | [] |
-| ODIN_RUNNER_HOST_VOLUME_MOUNTS | HostPath volume mounts for runner | [] |
+| Key | Description | Default             |
+| --- | --- |---------------------|
+| ODIN_RUNNER_IMAGE | Runner image | odinhq/runner:0.0.2 |
+| ODIN_RUNNER_RESOURCES_REQUESTS_CPU | Runner CPU request | 100m                |
+| ODIN_RUNNER_RESOURCES_REQUESTS_MEMORY | Runner memory request | 100Mi               |
+| ODIN_RUNNER_RESOURCES_REQUESTS_STORAGE | Runner ephemeral-storage request | 1Gi                 |
+| ODIN_RUNNER_RESOURCES_LIMITS_CPU | Runner CPU limit | -                   |
+| ODIN_RUNNER_RESOURCES_LIMITS_MEMORY | Runner memory limit | -                   |
+| ODIN_RUNNER_RESOURCES_LIMITS_STORAGE | Runner ephemeral-storage limit | -                   |
+| ODIN_RUNNER_DIND_ENABLED | Enable DinD sidecar | true                |
+| ODIN_RUNNER_DIND_IMAGE | DinD image | docker:dind         |
+| ODIN_RUNNER_DIND_RESOURCES_REQUESTS_CPU | DinD CPU request | 100m                |
+| ODIN_RUNNER_DIND_RESOURCES_REQUESTS_MEMORY | DinD memory request | 100Mi               |
+| ODIN_RUNNER_DIND_RESOURCES_REQUESTS_STORAGE | DinD ephemeral-storage request | 1Gi                 |
+| ODIN_RUNNER_DIND_RESOURCES_LIMITS_CPU | DinD CPU limit | -                   |
+| ODIN_RUNNER_DIND_RESOURCES_LIMITS_MEMORY | DinD memory limit | -                   |
+| ODIN_RUNNER_DIND_RESOURCES_LIMITS_STORAGE | DinD ephemeral-storage limit | -                   |
+| ODIN_RUNNER_DOCKER_SECRETS | Docker registry secrets for runner | []                  |
+| ODIN_RUNNER_HOST_VOLUME_MOUNTS | HostPath volume mounts for runner | []                  |
