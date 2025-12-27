@@ -4,8 +4,10 @@ import com.dream11.orchestrator.constants.Constants;
 import com.dream11.orchestrator.constants.RequestMessageType;
 import com.dream11.orchestrator.constants.ResponseMessageType;
 import com.dream11.orchestrator.constants.TaskStatus;
-import com.dream11.orchestrator.dto.ResponseData;
+import com.dream11.orchestrator.dto.NamespaceResponseData;
 import com.dream11.orchestrator.dto.ResponseMessage;
+import com.dream11.orchestrator.dto.ServiceResponseData;
+import com.dream11.orchestrator.dto.request.NamespaceRequestMessageBody;
 import com.dream11.orchestrator.dto.request.RequestMessage;
 import com.dream11.orchestrator.dto.request.ServiceRequestMessageBody;
 import com.dream11.orchestrator.inject.AppContext;
@@ -39,14 +41,25 @@ public class Orchestrator {
       RequestMessage requestMessage =
           AppContext.getObjectMapper().readValue(decompressedMessage, RequestMessage.class);
       this.setTraceId(requestMessage);
+      ResponseMessage baseResponse =
+          ResponseMessage.builder()
+              .id(requestMessage.getId())
+              .executionId(requestMessage.getTraceId())
+              .status(TaskStatus.FAILED)
+              .error(e.getMessage())
+              .build();
       // Send namespace failed response message
       if (requestMessage.getType().equals(RequestMessageType.NAMESPACE)) {
         ResponseMessage responseMessage =
-            ResponseMessage.builder()
-                .id(requestMessage.getId())
+            baseResponse.toBuilder()
                 .type(ResponseMessageType.NAMESPACE)
-                .status(TaskStatus.FAILED)
-                .error(e.getMessage())
+                .data(
+                    NamespaceResponseData.builder()
+                        .accountName(
+                            ((NamespaceRequestMessageBody) requestMessage.getBody())
+                                .getAccount()
+                                .getName())
+                        .build())
                 .build();
         ApplicationUtil.sendResponseMessage(this.messageProducer, responseMessage);
       } else {
@@ -58,13 +71,10 @@ public class Orchestrator {
             .forEach(
                 componentAction -> {
                   ResponseMessage componentResponseMessage =
-                      ResponseMessage.builder()
-                          .id(requestMessage.getId())
+                      baseResponse.toBuilder()
                           .type(ResponseMessageType.COMPONENT_STATUS)
-                          .status(TaskStatus.FAILED)
-                          .error(e.getMessage())
                           .data(
-                              ResponseData.builder()
+                              ServiceResponseData.builder()
                                   .componentName(componentAction.getName())
                                   .stage(componentAction.getStage().getName())
                                   .build())
@@ -74,11 +84,7 @@ public class Orchestrator {
                 });
         // Send service failed response message
         ResponseMessage.ResponseMessageBuilder serviceResponseMessage =
-            ResponseMessage.builder()
-                .id(requestMessage.getId())
-                .type(ResponseMessageType.SERVICE_STATUS)
-                .status(TaskStatus.FAILED)
-                .error(e.getMessage());
+            baseResponse.toBuilder().type(ResponseMessageType.SERVICE_STATUS);
         // Check if any component action is in validate stage
         boolean isValidateStage =
             serviceRequestMessageBody.getComponentActions().stream()
@@ -87,7 +93,8 @@ public class Orchestrator {
                         componentAction.getStage().getName().equalsIgnoreCase(Constants.VALIDATE));
         // If stage is validate then set stage in response data
         if (isValidateStage) {
-          serviceResponseMessage.data(ResponseData.builder().stage(Constants.VALIDATE).build());
+          serviceResponseMessage.data(
+              ServiceResponseData.builder().stage(Constants.VALIDATE).build());
         }
         ApplicationUtil.sendResponseMessage(this.messageProducer, serviceResponseMessage.build());
       }

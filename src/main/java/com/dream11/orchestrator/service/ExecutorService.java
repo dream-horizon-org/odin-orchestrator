@@ -9,8 +9,8 @@ import com.dream11.orchestrator.constants.Constants;
 import com.dream11.orchestrator.constants.ResponseMessageType;
 import com.dream11.orchestrator.constants.TaskStatus;
 import com.dream11.orchestrator.dto.ManifestServiceDto;
-import com.dream11.orchestrator.dto.ResponseData;
 import com.dream11.orchestrator.dto.ResponseMessage;
+import com.dream11.orchestrator.dto.ServiceResponseData;
 import com.dream11.orchestrator.dto.request.ComponentAction;
 import com.dream11.orchestrator.dto.request.ServiceRequestMessageBody;
 import com.dream11.orchestrator.exception.OrchestratorException;
@@ -313,9 +313,10 @@ public class ExecutorService {
     ResponseMessage responseMessage =
         ResponseMessage.builder()
             .id(deploymentId)
+            .executionId(AppContext.getTraceId())
             .type(ResponseMessageType.COMPONENT_STATUS)
             .status(TaskStatus.SUCCESSFUL)
-            .data(ResponseData.builder().stage(stage).componentName(componentName).build())
+            .data(ServiceResponseData.builder().stage(stage).componentName(componentName).build())
             .build();
     ApplicationUtil.sendResponseMessage(this.messageProducer, responseMessage);
   }
@@ -326,10 +327,11 @@ public class ExecutorService {
     ResponseMessage responseMessage =
         ResponseMessage.builder()
             .id(deploymentId)
+            .executionId(AppContext.getTraceId())
             .type(ResponseMessageType.COMPONENT_STATUS)
             .status(TaskStatus.FAILED)
             .error(logs)
-            .data(ResponseData.builder().stage(stage).componentName(componentName).build())
+            .data(ServiceResponseData.builder().stage(stage).componentName(componentName).build())
             .build();
     ApplicationUtil.sendResponseMessage(this.messageProducer, responseMessage);
   }
@@ -339,9 +341,10 @@ public class ExecutorService {
     ResponseMessage responseMessage =
         ResponseMessage.builder()
             .id(deploymentId)
+            .executionId(AppContext.getTraceId())
             .type(ResponseMessageType.SERVICE_STATUS)
             .status(TaskStatus.SUCCESSFUL)
-            .data(ResponseData.builder().stage(stage).build())
+            .data(ServiceResponseData.builder().stage(stage).build())
             .build();
     ApplicationUtil.sendResponseMessage(this.messageProducer, responseMessage);
   }
@@ -351,9 +354,10 @@ public class ExecutorService {
     ResponseMessage responseMessage =
         ResponseMessage.builder()
             .id(deploymentId)
+            .executionId(AppContext.getTraceId())
             .type(ResponseMessageType.SERVICE_STATUS)
             .status(TaskStatus.FAILED)
-            .data(ResponseData.builder().stage(stage).build())
+            .data(ServiceResponseData.builder().stage(stage).build())
             .build();
     ApplicationUtil.sendResponseMessage(this.messageProducer, responseMessage);
   }

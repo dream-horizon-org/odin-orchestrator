@@ -19,7 +19,7 @@
     <logback.version>1.5.18</logback.version>
     <hibernate-validator.version>8.0.0.Final</hibernate-validator.version>
     <jakarta.el.version>4.0.2</jakarta.el.version>
-    <message-kit.version>0.0.3</message-kit.version>
+    <message-kit.version>0.0.5</message-kit.version>
     <jackson.version>2.19.2</jackson.version>
     <fabric8.version>7.4.0</fabric8.version>
     <dnsjava.version>3.6.3</dnsjava.version>
