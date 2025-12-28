@@ -3,6 +3,7 @@ package com.dream11.orchestrator.processor;
 import com.dream11.orchestrator.constants.Constants;
 import com.dream11.orchestrator.constants.ResponseMessageType;
 import com.dream11.orchestrator.constants.TaskStatus;
+import com.dream11.orchestrator.dto.NamespaceResponseData;
 import com.dream11.orchestrator.dto.ResponseMessage;
 import com.dream11.orchestrator.dto.account.servicedata.K8sServiceData;
 import com.dream11.orchestrator.dto.request.NamespaceRequestMessageBody;
@@ -27,14 +28,19 @@ public class NamespaceMessageProcessor implements MessageProcessor {
   @Override
   @SneakyThrows
   public void process(RequestMessage requestMessage) {
+    NamespaceRequestMessageBody namespaceRequestMessageBody =
+        (NamespaceRequestMessageBody) requestMessage.getBody();
     ResponseMessage.ResponseMessageBuilder responseMessageBuilder =
         ResponseMessage.builder()
             .id(requestMessage.getId())
             .type(ResponseMessageType.NAMESPACE)
+            .executionId(requestMessage.getTraceId()) // TODO separate trace id and execution id
+            .data(
+                NamespaceResponseData.builder()
+                    .accountName(namespaceRequestMessageBody.getAccount().getName())
+                    .build())
             .status(TaskStatus.SUCCESSFUL)
             .error(StringUtils.EMPTY);
-    NamespaceRequestMessageBody namespaceRequestMessageBody =
-        (NamespaceRequestMessageBody) requestMessage.getBody();
 
     try {
       K8sServiceData k8sServiceData =
